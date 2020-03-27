@@ -9,6 +9,8 @@ public class OptimalArtifactC
     private double optimalNumOfFunctions;
     private double optimalLinesOfCode;
     private double optimalCommentsDensity;
+    private double optimalCoupling;
+    private double optimalCohesion;
     
     public void calculateOptimalClass(ArrayList<FindSimilarArtifactsC> similarClasses, int version) throws SQLException
     {
@@ -21,6 +23,9 @@ public class OptimalArtifactC
     		double functions = similarClasses.get(i).getName().getNumOfFunctions();
     		double linesOfCode = similarClasses.get(i).getName().getNcloc();
     		double commentsDensity = similarClasses.get(i).getName().getCommentsDensity();
+    		
+    		double coupling = similarClasses.get(i).getName().getCoupling();
+    		double cohesion = similarClasses.get(i).getName().getCohesion();
     		
     		//System.out.println("Arxikopoihsh optimal: " + complexity + " " + functions + " " + linesOfCode + " " + commentsDensity);
     		
@@ -52,6 +57,12 @@ public class OptimalArtifactC
     			if (similarClasses.get(i).getSimilarClasses().get(j).getCommentsDensity() > commentsDensity)
     			     commentsDensity = similarClasses.get(i).getSimilarClasses().get(j).getCommentsDensity();
     			
+    			if (similarClasses.get(i).getSimilarClasses().get(j).getCohesion() < cohesion)
+    				cohesion = similarClasses.get(i).getSimilarClasses().get(j).getCohesion();
+    			
+    			if (similarClasses.get(i).getSimilarClasses().get(j).getCoupling() < coupling)
+    				coupling = similarClasses.get(i).getSimilarClasses().get(j).getCoupling();
+    			
     			/*System.out.println("Clasas name:" + similarClasses.get(i).getSimilarClasses().get(j).getClassName());
     			System.out.println("try to find optimal: " + similarClasses.get(i).getSimilarClasses().get(j).getDit() + " " + similarClasses.get(i).getSimilarClasses().get(j).getNocc() + " " +
     					similarClasses.get(i).getSimilarClasses().get(j).getMpc() + " " + similarClasses.get(i).getSimilarClasses().get(j).getRfc() + " " + similarClasses.get(i).getSimilarClasses().get(j).getLcom() + 
@@ -60,7 +71,7 @@ public class OptimalArtifactC
 
     		}
     		
-    		optimClass.setOptimalClassValues(complexity, functions,linesOfCode, commentsDensity);
+    		optimClass.setOptimalClassValues(complexity, functions,linesOfCode, commentsDensity, cohesion, coupling);
     		
 			/*
 			 * System.out.println("For class: " +
@@ -91,6 +102,9 @@ public class OptimalArtifactC
     		double linesOfCode = similarPackages.get(i).getPackage().getNcloc();
     		double commentsDensity = similarPackages.get(i).getPackage().getCommentsDensity();
     		
+    		double coupling = similarPackages.get(i).getPackage().getCoupling();
+    		double cohesion = similarPackages.get(i).getPackage().getCohesion();
+    		
     		// Values from similar classes
     		for (int j = 0; j < similarPackages.get(i).getSimilarPackages().size(); j++)
     		{  			
@@ -102,6 +116,12 @@ public class OptimalArtifactC
     				linesOfCode = similarPackages.get(i).getSimilarPackages().get(j).getNcloc();
     			if (similarPackages.get(i).getSimilarPackages().get(j).getCommentsDensity() > commentsDensity)
     			     commentsDensity = similarPackages.get(i).getSimilarPackages().get(j).getCommentsDensity();
+    			
+    			if (similarPackages.get(i).getSimilarPackages().get(j).getCohesion() < cohesion)
+    				cohesion = similarPackages.get(i).getSimilarPackages().get(j).getCohesion();
+    			
+    			if (similarPackages.get(i).getSimilarPackages().get(j).getCoupling() < coupling)
+    				coupling = similarPackages.get(i).getSimilarPackages().get(j).getCoupling();
     			/*System.out.println("Clasas name:" + similarClasses.get(i).getSimilarClasses().get(j).getClassName());
     			System.out.println("try to find optimal: " + similarClasses.get(i).getSimilarClasses().get(j).getDit() + " " + similarClasses.get(i).getSimilarClasses().get(j).getNocc() + " " +
     					similarClasses.get(i).getSimilarClasses().get(j).getMpc() + " " + similarClasses.get(i).getSimilarClasses().get(j).getRfc() + " " + similarClasses.get(i).getSimilarClasses().get(j).getLcom() + 
@@ -110,7 +130,7 @@ public class OptimalArtifactC
 
     		}
     		
-    		optimClass.setOptimalClassValues(complexity, functions,linesOfCode, commentsDensity);
+    		optimClass.setOptimalClassValues(complexity, functions,linesOfCode, commentsDensity, cohesion, coupling);
     		
 			/*
 			 * System.out.println("For package: " +
@@ -129,12 +149,14 @@ public class OptimalArtifactC
     	}
 	}
 
-    public void setOptimalClassValues(double complexity, double functions, double linesOfCode, double commentsDensity)
+    public void setOptimalClassValues(double complexity, double functions, double linesOfCode, double commentsDensity, double cohesion, double coupling)
     {
     	this.optimalComplexity = complexity;
         this.optimalNumOfFunctions = functions;
         this.optimalLinesOfCode = linesOfCode;
         this.optimalCommentsDensity = commentsDensity; 	
+        this.optimalCoupling = coupling;
+        this.optimalCohesion = cohesion;
     }
     
     public double getComplexity()
@@ -155,6 +177,16 @@ public class OptimalArtifactC
     public double getCommentsDensity()
     {
     	return this.optimalCommentsDensity;
+    }
+    
+    public double getCohesion()
+    {
+    	return this.optimalCohesion;
+    }
+    
+    public double getCoupling()
+    {
+    	return this.optimalCoupling;
     }
 
 }

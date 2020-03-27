@@ -11,14 +11,14 @@ import main.java.breakingPointTool.artifact.PackageMetricsC;
 import main.java.breakingPointTool.artifact.ProjectArtifact;
 import main.java.breakingPointTool.database.DatabaseGetData;
 import main.java.breakingPointTool.database.DatabaseSaveDataC;
-
+import main.java.breakingPointTool.externalTools.SemiCalculator;
 
 public class AverageLocCalculationC 
 {
 	private ArrayList<FileMetricsC> fileMetrics = new ArrayList<FileMetricsC>();
 	private ArrayList<PackageMetricsC> packageMetrics = new ArrayList<PackageMetricsC>();
 	
-	public void setMetricsToClassLevel(ApiCall object, String projectName, int versionNum) throws NumberFormatException, IOException, SQLException
+	public void setMetricsToClassLevel(ApiCall object, String projectName, int versionNum, String language, String path, String credentials) throws NumberFormatException, IOException, SQLException, InterruptedException
 	{
 		for (int i = 0; i < object.getArtifactNames().size(); i ++)
 		{
@@ -44,19 +44,23 @@ public class AverageLocCalculationC
 
 			DatabaseSaveDataC saveInDataBase = new DatabaseSaveDataC();
 			saveInDataBase.saveMetricsInDatabase(projectName, versionNum, className, scope, lines_of_code, 
-					complexity, functions, comment_lines_density);
+					complexity, functions, comment_lines_density, 0, 0 );
 			
 			saveInDataBase.savePrincipalMetrics(className, projectName, versionNum, TD, principal,
 					codeSmells,bugs,vulnerabilities,duplications, scope, classes, complexity, functions, lines_of_code, statements,comment_lines_density, "C");
-
+			
 			FileMetricsC cm = new FileMetricsC(projectName, className);
 			cm.metricsfromSonar(classes, complexity, functions, lines_of_code, statements, TD, comment_lines_density, codeSmells, bugs, vulnerabilities, duplications);
+			//cm.metricsfromMetricsCalculator(className, versionNum);
 			fileMetrics.add(cm);
 		}
-
+		
+		// SEMI Execution
+		SemiCalculator semi = new SemiCalculator();
+		semi.executeSemiCalculator(language, versionNum, path, projectName, credentials);
 	}
 	
-	public void setClassToPackageLevel(ArrayList<String> longNamePackage, String projName, int version, ApiCall apiCall) throws NumberFormatException, SQLException, IOException
+	public void setClassToPackageLevel(ArrayList<String> longNamePackage, String projName, int version, ApiCall apiCall, String language) throws NumberFormatException, SQLException, IOException
 	{	
 		this.packageMetrics = new ArrayList<PackageMetricsC>();
 		
@@ -70,7 +74,9 @@ public class AverageLocCalculationC
 			{	
 				String p2 = apiCall.getArtifactNames().get(w);
 				if (p1.equals(p2))
-				{		
+				{	
+					System.out.println("--------- " + p1);
+					System.out.println("--------- " + p2);
 					//System.out.println("Package name from api: "+apiCall.getArtifactNames().get(w) + " Package name: " + longNamePackage.get(i));
 					//System.out.println("Check TD: " + apiCall.getTechnicalDebt().get(w));
 					
@@ -78,13 +84,18 @@ public class AverageLocCalculationC
 					double principal = 0;
 					
 					DatabaseSaveDataC saveInDataBase = new DatabaseSaveDataC();
+					
+					System.out.println(longNamePackage.get(i) + " " + projName+ " " + version+ " " + apiCall.getTechnicalDebt().get(w)+ " " + principal + " " +
+							apiCall.getCodeSmells().get(w) + " " +apiCall.getBugs().get(w) + " " + apiCall.getVulnerabilities().get(w)+ " " +
+							apiCall.getDuplicationsDensity().get(w)+ " " + scope+ " " + apiCall.getNumOfClasses().get(w)+ " " + apiCall.getComplexity().get(w) + " " +
+							apiCall.getFunctions().get(w)+ " " + apiCall.getNcloc().get(w)+ " " + apiCall.getStatements().get(w) + " " +apiCall.getCommentsDensity().get(w)+ " " + language);
 
-					saveInDataBase.savePrincipalMetrics(longNamePackage.get(i), projName, version, apiCall.getTechnicalDebt().get(w), principal,
+					saveInDataBase.savePrincipalMetrics(p1, projName, version, apiCall.getTechnicalDebt().get(w), principal,
 							apiCall.getCodeSmells().get(w),apiCall.getBugs().get(w),apiCall.getVulnerabilities().get(w),
 							apiCall.getDuplicationsDensity().get(w), scope, apiCall.getNumOfClasses().get(w), apiCall.getComplexity().get(w), 
-							apiCall.getFunctions().get(w), apiCall.getNcloc().get(w), apiCall.getStatements().get(w),apiCall.getCommentsDensity().get(w), "C");				
+							apiCall.getFunctions().get(w), apiCall.getNcloc().get(w), apiCall.getStatements().get(w),apiCall.getCommentsDensity().get(w), language);				
 					
-					PackageMetricsC p = new PackageMetricsC(projName,longNamePackage.get(i));					
+					PackageMetricsC p = new PackageMetricsC(projName, p1);					
 					p.metricsfromSonar(apiCall.getNumOfClasses().get(w),apiCall.getComplexity().get(w), apiCall.getFunctions().get(w),
 							apiCall.getNcloc().get(w), apiCall.getStatements().get(w), apiCall.getTechnicalDebt().get(w), apiCall.getCommentsDensity().get(w),
 							apiCall.getCodeSmells().get(w), apiCall.getBugs().get(w), apiCall.getVulnerabilities().get(w), apiCall.getDuplicationsDensity().get(w));
@@ -105,6 +116,9 @@ public class AverageLocCalculationC
 				String packNameOfClass = this.fileMetrics.get(j).getClassName().substring(0,index);				
 				if (packName.equals(packNameOfClass))
 				{
+					System.out.println("For class: " + this.fileMetrics.get(j).getClassName() +
+							" and version: " + version);
+					this.fileMetrics.get(j).metricsfromMetricsCalculator(this.fileMetrics.get(j).getClassName(), version);
 					this.packageMetrics.get(i).setClassInPackage(this.fileMetrics.get(j));
 				}
 			}

@@ -41,14 +41,31 @@ public class MetricsCalculator
 	public void executeOneVersion(String jarName, int version, String path, String projectName) throws IOException, InterruptedException
 	{
 		int exitval;
-		// Check if jar file exists
-		//File f = new File(path + File.separator + projectName + File.separator + jarName + version + ".jar");
 		System.out.println("----- Start Metrics Calculator -----");
-		File f = new File(System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar");
+		
+		// Jar file if you execute this tool as jar file
+		File f = new File(path + File.separator + projectName + File.separator + jarName + version + ".jar");
+		
+		// Run On Docker in Server Command
+		//String javaRunningDirectory = System.getProperty("user.dir");
+		//File f = new File(javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar");
+		
+		// Jar file if you execute this tool from eclipse
+		//File f = new File(System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar");
+		
+		System.out.println(f);
+		
 		if(f.exists() && !f.isDirectory()) 
 		{ 
+			// Run On Docker in Server Command
+			String execution = "java -jar metrics_calculator.jar " + path + File.separator + projectName + File.separator + jarName + version + ".jar" + " output" + version + ".csv";
+			// if you execute from eclipse
+			//String execution = "java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv";
+			System.out.println(execution);
+			//Process metricsAnalysisProcess = Runtime.getRuntime()
+					//.exec("java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv");
 			Process metricsAnalysisProcess = Runtime.getRuntime()
-					.exec("java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv");
+					.exec(execution);
 			metricsAnalysisProcess.waitFor();
 			// If exit value is 0 then execution was successful
 			exitval = metricsAnalysisProcess.exitValue();

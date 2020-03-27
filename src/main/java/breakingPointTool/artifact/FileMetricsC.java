@@ -2,6 +2,8 @@ package main.java.breakingPointTool.artifact;
 
 import java.util.ArrayList;
 
+import main.java.breakingPointTool.database.DatabaseGetData;
+
 public class FileMetricsC 
 {
 	private String projectName;
@@ -27,6 +29,10 @@ public class FileMetricsC
 	private double codeSmells;
 	private double vulnerabilities;
 	private double duplicated_lines_density;
+	
+	//Couling and Cohesion
+	private double coupling;
+	private double cohesion;
 
 	// Breaking Point Tool Metrics
 	private ArrayList<Double> locChange;
@@ -54,6 +60,9 @@ public class FileMetricsC
 		this.codeSmells = 0;
 		this.vulnerabilities = 0;
 		this.duplicated_lines_density = 0;
+		
+		this.coupling = 0;
+		this.cohesion = 0;
 	}
 	
 	public void metricsfromSonar(double classes, double complexity, double functions,double nloc, double statements, double TD, double comment_lines_density, double codeSmells, double bugs, double vulnerabilities, double duplicated_lines_density) 
@@ -72,12 +81,24 @@ public class FileMetricsC
 		this.duplicated_lines_density = duplicated_lines_density;
 	}
 	
-	public void metricsfromMetricsCalculator(double lines_of_code, double McCabes_cyclomatic_complexity, double weighted_methods_per_class_unity, double lines_of_code_per_line_of_comment)
+	public void metricsfromMetricsCalculator(String fileName, int version)
 	{
-		this.lines_of_code = lines_of_code;
-		this.McCabes_cyclomatic_complexity = McCabes_cyclomatic_complexity;
-		this.weighted_methods_per_class_unity = weighted_methods_per_class_unity;
-		this.lines_of_code_per_line_of_comment = lines_of_code_per_line_of_comment;
+		DatabaseGetData db = new DatabaseGetData();
+		ArrayList<Double> list = new ArrayList<Double>();
+		list = db.getCouplingCohesion(fileName, version);
+		
+		this.setCoupling(list.get(0));
+		this.setCohesion(list.get(1));
+	}
+	
+	public void setCoupling(double c) 
+	{
+		this.coupling = c;
+	}
+	
+	public void setCohesion(double c) 
+	{
+		this.cohesion = c;
 	}
 	
 	public void setBugs(double bugs)
@@ -238,5 +259,15 @@ public class FileMetricsC
 	public double getDuplications()
 	{
 		return this.duplicated_lines_density;
+	}
+	
+	public double getCoupling()
+	{
+		return this.coupling;
+	}
+	
+	public double getCohesion() 
+	{
+		return this.cohesion;
 	}
 }

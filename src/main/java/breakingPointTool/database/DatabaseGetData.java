@@ -50,6 +50,52 @@ public class DatabaseGetData
 		getAllProjects();
 	}
 	
+	public ArrayList<Double> getCouplingCohesion(String fileName, int version)
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+		ResultSet resultSet = null;
+		String query;
+		ArrayList<Double> cc = new ArrayList<Double>();
+		
+		
+		query = "SELECT coupling, cohesion FROM cMetrics WHERE class_name = (?) AND version = (?) ";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, fileName);
+			pstm.setInt(2, version);
+			resultSet = pstm.executeQuery();
+			while (resultSet.next()) 
+			{
+				cc.add(resultSet.getDouble("coupling"));
+				cc.add(resultSet.getDouble("cohesion"));
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			System.out.println("Database select request failed. The project or the kee does not exist in the database."
+					+ "Please try again!");
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return cc;
+	}
+	
+	
 	public void getKeeForProject(String projectName)
 	{
 		Connection conn = SonarDatabaseConnection.getConnection();

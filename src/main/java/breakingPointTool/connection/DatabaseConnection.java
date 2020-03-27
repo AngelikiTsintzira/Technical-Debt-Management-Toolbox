@@ -6,13 +6,20 @@ import java.sql.SQLException;
 
 public class DatabaseConnection 
 {
-	private static final String METRICS_DRIVER = "";
-	private static final String METRICS_URL = "";
-	private static final String METRICS_USERNAME = "";
-	private static final String METRICS_PASSWORD = "";
+	private static final String METRICS_DRIVER = "org.gjt.mm.mysql.Driver";
+	private static String METRICS_URL = "";
+	private static String METRICS_USERNAME = "";
+	private static String METRICS_PASSWORD = "";
 
 	// Connection Driver for Java and mySQL
 	private static Connection connection = null;
+	
+	public DatabaseConnection(String user, String pass, String sonar)
+	{
+		DatabaseConnection.METRICS_USERNAME = user;
+		DatabaseConnection.METRICS_PASSWORD = pass;
+		DatabaseConnection.METRICS_URL = "jdbc:mysql://" + sonar + "?useSSL=false&autoReconnect=true";
+	}
 
 	public static Connection getConnection() 
 	{

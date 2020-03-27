@@ -23,6 +23,9 @@ public class ResultsC
 	private double fitnessValueNumOfFunctions;
 	private double fitnessValueCommentsDensity;
 	
+	private double fitnessValueCoupling;
+	private double fitnessValueCohesion;
+	
 	public ResultsC()
 	{
 		this.interest = 0;
@@ -39,12 +42,16 @@ public class ResultsC
 	    	this.fitnessValueNumOfFunctions = calculateFitnessValueMin(optimalClass.getNumOfFunctions(), investigatedClass.getNumOfFunctions());
 	    	this.fitnessValueCommentsDensity = calculateFitnessValueMax(optimalClass.getCommentsDensity(), investigatedClass.getCommentsDensity());
 	    	
-	    	this.interest = this.fitnessValueLinesOfCode + this.fitnessValueComplexity + this.fitnessValueNumOfFunctions + this.fitnessValueCommentsDensity;
+	    	this.fitnessValueCohesion = calculateFitnessValueMin(optimalClass.getCohesion(), investigatedClass.getCohesion());
+	    	this.fitnessValueCoupling = calculateFitnessValueMin(optimalClass.getCoupling(), investigatedClass.getCoupling());
+	    	
+	    	this.interest = this.fitnessValueLinesOfCode + this.fitnessValueComplexity + this.fitnessValueNumOfFunctions + this.fitnessValueCommentsDensity
+	    			+ this.fitnessValueCohesion +  this.fitnessValueCoupling;
 	    	//System.out.println("gchsgd: " + this.interest);
 	    	System.out.println("k: " + k);
 	    	/*System.out.println("Interest test: " + this.fitnessValueDit + " " + this.fitnessValueNocc +" "+ this.fitnessValueMpc +" "+ this.fitnessValueRfc + " "+this.fitnessValueLcom + " "+
 	    			this.fitnessValueDac +" "+ this.fitnessValueNom +" "+ this.fitnessValueWmpc +" "+ this.fitnessValueSize1 +" "+ this.fitnessValueSize2);*/
-	    	this.interest = this.interest / 4;
+	    	this.interest = this.interest / 6;
 	    	this.interest = 1  - this.interest ;
 	    	System.out.println("Interest is: " + interest);
 	    	this.interest = this.interest * k;  	
@@ -83,11 +90,15 @@ public class ResultsC
 	    	this.fitnessValueNumOfFunctions = calculateFitnessValueMin(optimalClass.getNumOfFunctions(), investigatedPackage.getNumOfFunctions());
 	    	this.fitnessValueCommentsDensity = calculateFitnessValueMax(optimalClass.getCommentsDensity(), investigatedPackage.getCommentsDensity());
 	    	
-	    	this.interest = this.fitnessValueLinesOfCode + this.fitnessValueComplexity + this.fitnessValueNumOfFunctions + this.fitnessValueCommentsDensity;
+	    	this.fitnessValueCohesion = calculateFitnessValueMin(optimalClass.getCohesion(), investigatedPackage.getCohesion());
+	    	this.fitnessValueCoupling = calculateFitnessValueMin(optimalClass.getCoupling(), investigatedPackage.getCoupling());
+	    	
+	    	this.interest = this.fitnessValueLinesOfCode + this.fitnessValueComplexity + this.fitnessValueNumOfFunctions + this.fitnessValueCommentsDensity
+	    			+ this.fitnessValueCohesion +  this.fitnessValueCoupling;;
 
 	    	System.out.println("k: " + k);
 	    	System.out.println("Interest Package: " + this.fitnessValueLinesOfCode + " " + this.fitnessValueComplexity +" "+ this.fitnessValueNumOfFunctions +" "+ this.fitnessValueCommentsDensity );
-	    	this.interest = this.interest / 4;
+	    	this.interest = this.interest / 6;
 	    	this.interest = 1  - this.interest ;
 	    	System.out.println("Interest is: " + interest);
 	    	this.interest = this.interest * k;  	

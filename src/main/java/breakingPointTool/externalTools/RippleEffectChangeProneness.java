@@ -9,18 +9,22 @@ public class RippleEffectChangeProneness
 {
 	public void ExtractJar(String jarName, int version, String path, String projectName)
 			throws IOException, InterruptedException {
-		// path =
-		// "/Users/angelikitsintzira/eclipse-workspace/BreakingPointTool/jars/JavaGame0.jar";
 
-		// path = path + File.separator + projectName + File.separator + jarName +
-		// version + ".jar";
+		// Run On PC command
+		//path = path + File.separator + projectName + File.separator + jarName + version + ".jar";
 
 		String javaRunningDirectory = System.getProperty("user.dir");
-		path = javaRunningDirectory + "/jars/" + jarName + version + ".jar";
 		String project = jarName + version;
+		
+		// Run On Docker in Server Command
+		path = javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar";
 
+		System.out.println(path);
 		// Check if jar file exists
 		File f = new File(path);
+		f.setReadable(true, false);
+		f.setExecutable(true, false);
+		f.setWritable(true, false);
 		if (f.exists() && !f.isDirectory()) 
 		{
 			// Create a folder
@@ -65,7 +69,7 @@ public class RippleEffectChangeProneness
 			}
 
 		} else {
-			System.out.println("Jar file does not exist. The program will terminate.");
+			System.out.println("Jar file does not exist. The REM will terminate.");
 			System.exit(0);
 		}
 
@@ -99,11 +103,19 @@ public class RippleEffectChangeProneness
 
 	public static void executeREM(String project) throws InterruptedException, IOException 
 	{
+		System.out.println("------ Process REM started -----");
+
 		ProcessBuilder processB = new ProcessBuilder();
-		processB.command("java", "-jar", "externalTools/interest_probability.jar",
-				System.getProperty("user.dir") + "/" + project);
+		// ******** execution from ide ************
+		//processB.command("java", "-jar", "externalTools/interest_probability.jar",
+				//System.getProperty("user.dir") + "/" + project);
+		
+		// ******** execution from jar ************
+		//System.out.println("^^^^^^^^REM execution folder " + System.getProperty("user.dir") + "/" + project);
+		processB.command("java", "-jar", "interest_probability.jar",
+			System.getProperty("user.dir") + "/" + project);
 		// System.out.println("^^^^^^^ : " + System.getProperty("user.dir") + project);
-		// processB.directory(file);
+		//processB.directory(file);
 
 		try {
 
@@ -131,7 +143,6 @@ public class RippleEffectChangeProneness
 		}
 
 		//int exitval;
-		System.out.println("------ Process REM started -----");
 		//System.out.println(
 		//		"java -jar externalTools/interest_probability.jar " + System.getProperty("user.dir") + "/" + project);
 

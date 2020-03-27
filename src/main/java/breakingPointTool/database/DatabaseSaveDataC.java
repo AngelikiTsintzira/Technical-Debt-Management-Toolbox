@@ -37,7 +37,7 @@ public class DatabaseSaveDataC
 		//System.out.println("Calculated Breaking Point - Interest - Pricipal saved in database successfully!");
 	}
 
-	public void saveMetricsInDatabase(String projectName, int versionNum, String className, String scope, double loc, double cyclomatic_complexity, double wmoc, double loc_per_loc) throws SQLException, NumberFormatException, IOException
+	public void saveMetricsInDatabase(String projectName, int versionNum, String className, String scope, double loc, double cyclomatic_complexity, double wmoc, double loc_per_loc, double coupling, double cohesion) throws SQLException, NumberFormatException, IOException
 	{
 		// Save metrics that calculated from metrics calculator tool in database
 
@@ -49,9 +49,9 @@ public class DatabaseSaveDataC
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		String query = "INSERT INTO cMetrics (class_name,project_name,scope,loc, cyclomatic_complexity, number_of_functions, comments_density, version)  VALUES('"
+		String query = "INSERT INTO cMetrics (class_name,project_name,scope,loc, cyclomatic_complexity, number_of_functions, comments_density, version, coupling, cohesion)  VALUES('"
 				+ className + "'," + "'" + projectName + "'," + "'" + scope + "'," + "" + loc + "," + "" + cyclomatic_complexity + "," + "" + wmoc
-				+ "," + "" + loc_per_loc + "," + ""  + versionNum + ") ON DUPLICATE KEY UPDATE class_name = '" + className
+				+ "," + "" + loc_per_loc + "," + ""  + versionNum +  "," + "" + coupling + "," + "" + cohesion +  ") ON DUPLICATE KEY UPDATE class_name = '" + className
 				+ "';";
 		stmt.executeUpdate(query);
 

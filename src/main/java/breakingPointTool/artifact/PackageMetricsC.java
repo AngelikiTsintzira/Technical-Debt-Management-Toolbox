@@ -32,6 +32,10 @@ public class PackageMetricsC
 	private double vulnerabilities;
 	private double duplicated_lines_density;
 	
+	//Couling and Cohesion
+	private double coupling;
+	private double cohesion;
+	
 	// Breaking Point Tool Metrics
 	private ArrayList<Double> locChange;
 	private double averageLocChange;
@@ -62,6 +66,9 @@ public class PackageMetricsC
 		this.duplicated_lines_density = 0;
 		
 		this.averageLocChange = 0;
+		
+		this.coupling = 0;
+		this.cohesion = 0;
 	}
 	
 	
@@ -101,17 +108,30 @@ public class PackageMetricsC
 		this.vulnerabilities = vulnerabilities;
 	}
 	
+	public void setCoupling(double c) 
+	{
+		this.coupling = c;
+	}
+	
+	public void setCohesion(double c) 
+	{
+		this.cohesion = c;
+	}
+	
 	public void calculateMetricsPackageLevel(int version) throws NumberFormatException, SQLException, IOException
 	{
 		int num = this.filesInPackage.size();
 		double lines_of_codeTemp = 0, complexityTemp = 0, functionsTemp = 0;
 		double comment_lines_density = 0;
+		double couplingTemp = 0, cohesionTemp = 0;
 		for  (int i = 0; i < this.filesInPackage.size(); i++)
 		{
 			lines_of_codeTemp = lines_of_codeTemp + this.filesInPackage.get(i).getNcloc();
 			complexityTemp = complexityTemp + this.filesInPackage.get(i).getComplexity();
 			functionsTemp = functionsTemp + this.filesInPackage.get(i).getNumOfFunctions();
 			comment_lines_density = comment_lines_density + this.filesInPackage.get(i).getCommentsDensity();
+			couplingTemp = couplingTemp + this.filesInPackage.get(i).getCoupling();
+			cohesionTemp = cohesionTemp + this.filesInPackage.get(i).getCohesion();
 			
 			/*
 			 * coupling_between_objects = coupling_between_objects +
@@ -128,6 +148,8 @@ public class PackageMetricsC
 		this.comment_lines_density = comment_lines_density/num;
 		this.complexity = complexityTemp/num;
 		this.functions = functionsTemp/num;
+		this.coupling = couplingTemp / num;
+		this.cohesion = cohesionTemp / num;
 		String scope =  "DIR";
 
 		//DatabaseSaveData saveInDataBase = new DatabaseSaveData(); 
@@ -142,8 +164,8 @@ public class PackageMetricsC
 		
 		DatabaseSaveDataC saveInDataBase = new DatabaseSaveDataC();
 		
-		saveInDataBase.saveMetricsInDatabase(projectName, version, this.getPackageName(), scope, lines_of_codeTemp, 
-				complexity, functions, comment_lines_density);
+		saveInDataBase.saveMetricsInDatabase(projectName, version, this.getPackageName(), scope, this.nloc, 
+				this.complexity, this.functions, this.comment_lines_density, this.coupling, this.cohesion);
 	}
 
 	public double getCommentsDensity()
@@ -290,6 +312,16 @@ public class PackageMetricsC
 	public double getDuplications()
 	{
 		return this.duplicated_lines_density;
+	}
+	
+	public double getCoupling()
+	{
+		return this.coupling;
+	}
+	
+	public double getCohesion() 
+	{
+		return this.cohesion;
 	}
 
 }

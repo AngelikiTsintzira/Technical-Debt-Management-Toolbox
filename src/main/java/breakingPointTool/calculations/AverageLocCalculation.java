@@ -290,77 +290,7 @@ public class AverageLocCalculation
 				}
 			}
 		}
-
-
-
-
-		/*int packageNum = versions.get(versions.size()-1).getPackages().size();
-
-		for (int q = 0; q < packageNum; q++)
-		{
-			String currentPackage = versions.get(versions.size()-1).getPackages().get(q).getPackageName();
-			System.out.println("Current Package: " + currentPackage);
-			double x = 0;
-			int numOfVersions = 0;
-			for (int i = 0; i < versions.size(); i++)
-			{				
-				// paketa kathe version
-				for (int j = 1; j < versions.get(i).getPackages().size() - 1; j++)
-				{
-					if (currentPackage.equals(versions.get(i).getPackages().get(j).getPackageName()))
-					{
-						x = x + Math.abs(versions.get(i).getPackages().get(j).getSize1() - versions.get(i).getPackages().get(j-1).getSize1());
-						numOfVersions++;
-					}										
-				}
-			}
-
-			System.out.println("For package: " + currentPackage + " the loc is: " + x/numOfVersions );	
-			versions.get(versions.size()-1).getPackages().get(q).setAverageInterest(x/numOfVersions );	
-		}	*/	
-
 	}
-
-
-
-
-/*
-	public void setLocClassLevel(ArrayList<ArrayList<ClassMetrics>> versionsList)
-	{
-		for (int i = 0; i < versionsList.get(versionsList.size() -1).size(); i++)
-		{
-			ClassMetrics classMetrics = versionsList.get(versionsList.size() -1).get(i);
-			ArrayList<Double> locChange = new ArrayList<Double>();
-			double x = 0;
-			for (int k = 0; k < versionsList.size(); k++ ) 
-			{
-				// versions
-				ArrayList<ClassMetrics> clmetricsList = versionsList.get(k);
-				for (int j = 0; j < clmetricsList.size(); j++)
-				{
-					//classes in every version
-					ClassMetrics cl = clmetricsList.get(j);
-					if (cl.getClassName().equals(classMetrics.getClassName()))
-					{
-						locChange.add(cl.getSize1());
-						break;
-					}
-
-				}				
-			}
-
-			for (int j = 1; j <locChange.size() - 1; j++)
-			{
-				x = x + Math.abs(locChange.get(j) - locChange.get(j-1));
-			}
-
-			System.out.println("For class:" + classMetrics.getClassName());
-			System.out.println("Average LOC is: " + x/locChange.size());
-			classMetrics.setAverageInterest(x/locChange.size());
-			locChange.clear();
-
-		}
-	} */
 
 	public void setClassToPackageLevel(ArrayList<String> longNamePackage, String projName, int version) throws NumberFormatException, SQLException, IOException
 	{		
@@ -378,20 +308,6 @@ public class AverageLocCalculation
 		{
 			String packName = this.packageMetrics.get(i).getPackageName();
 			
-			ArrayList<Double> list = new ArrayList<Double>();
-			//list = ChangePronenessPackage.get(packName);
-			
-			if (ChangePronenessPackage.get(packName) == null)
-			{
-				list.add(0.0);
-				list.add(0.0);
-			}
-			else
-			{
-				list = ChangePronenessPackage.get(packName);
-			}
-			
-			this.packageMetrics.get(i).metricsfromChangeProneness(list.get(0), list.get(1));
 			
 			for (int j = 0; j < this.classMetrics.size(); j++)
 			{
@@ -399,10 +315,38 @@ public class AverageLocCalculation
 				if (index >= 0)
 				{
 					String packNameOfClass = this.classMetrics.get(j).getClassName().substring(0,index);
+					
 
-					if (packName.equals(packNameOfClass))
+					// apo equals egine contains
+					if (packName.contains(packNameOfClass))
 					{
+						int first = packName.indexOf(packNameOfClass);
+						int len = packNameOfClass.length();
+						
+						if ((first + 1 + len) < packName.length())
+							continue;
+						
 						this.packageMetrics.get(i).setClassInPackage(this.classMetrics.get(j));
+						this.packageMetrics.get(i).setPackageName(packNameOfClass);
+						//System.out.println("Package class: " + packNameOfClass);
+						//System.out.println("package: " + packName);
+						//System.out.println("New package name: " + this.packageMetrics.get(i).getPackageName());
+						
+						ArrayList<Double> list = new ArrayList<Double>();
+						//list = ChangePronenessPackage.get(packName);
+						
+						if (ChangePronenessPackage.get(packNameOfClass) == null)
+						{
+							list.add(0.0);
+							list.add(0.0);
+						}
+						else
+						{
+							list = ChangePronenessPackage.get(packNameOfClass);
+						}
+						
+						this.packageMetrics.get(i).metricsfromChangeProneness(list.get(0), list.get(1));
+						
 					}
 				}
 			}

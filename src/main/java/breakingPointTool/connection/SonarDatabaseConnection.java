@@ -6,13 +6,20 @@ import java.sql.SQLException;
 
 public class SonarDatabaseConnection 
 {
-	private static final String SONAR_DRIVER = "";
-	private static final String SONAR_URL = "";
-	private static final String SONAR_USERNAME = "";
-	private static final String SONAR_PASSWORD = "";	
+	private static final String SONAR_DRIVER = "org.gjt.mm.mysql.Driver";
+	private static String SONAR_URL = "";
+	private static String SONAR_USERNAME = "";
+	private static String SONAR_PASSWORD = "";
 
 	// Connection Driver for Java and mySQL
 	private static Connection connection = null;
+	
+	public SonarDatabaseConnection(String user, String pass, String sonar)
+	{
+		SonarDatabaseConnection.SONAR_USERNAME = user;
+		SonarDatabaseConnection.SONAR_PASSWORD = pass;
+		SonarDatabaseConnection.SONAR_URL = "jdbc:mysql://" + sonar + "?useSSL=false&autoReconnect=true";
+	}
 
 	public static Connection getConnection() 
 	{
