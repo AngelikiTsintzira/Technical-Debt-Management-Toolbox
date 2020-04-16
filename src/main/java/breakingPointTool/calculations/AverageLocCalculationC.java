@@ -47,7 +47,7 @@ public class AverageLocCalculationC
 					complexity, functions, comment_lines_density, 0, 0 );
 			
 			saveInDataBase.savePrincipalMetrics(className, projectName, versionNum, TD, principal,
-					codeSmells,bugs,vulnerabilities,duplications, scope, classes, complexity, functions, lines_of_code, statements,comment_lines_density, "C");
+					codeSmells,bugs,vulnerabilities,duplications, scope, classes, complexity, functions, lines_of_code, statements,comment_lines_density, language);
 			
 			FileMetricsC cm = new FileMetricsC(projectName, className);
 			cm.metricsfromSonar(classes, complexity, functions, lines_of_code, statements, TD, comment_lines_density, codeSmells, bugs, vulnerabilities, duplications);
@@ -75,11 +75,6 @@ public class AverageLocCalculationC
 				String p2 = apiCall.getArtifactNames().get(w);
 				if (p1.equals(p2))
 				{	
-					System.out.println("--------- " + p1);
-					System.out.println("--------- " + p2);
-					//System.out.println("Package name from api: "+apiCall.getArtifactNames().get(w) + " Package name: " + longNamePackage.get(i));
-					//System.out.println("Check TD: " + apiCall.getTechnicalDebt().get(w));
-					
 					String scope = "DIR";
 					double principal = 0;
 					
@@ -116,8 +111,6 @@ public class AverageLocCalculationC
 				String packNameOfClass = this.fileMetrics.get(j).getClassName().substring(0,index);				
 				if (packName.equals(packNameOfClass))
 				{
-					System.out.println("For class: " + this.fileMetrics.get(j).getClassName() +
-							" and version: " + version);
 					this.fileMetrics.get(j).metricsfromMetricsCalculator(this.fileMetrics.get(j).getClassName(), version);
 					this.packageMetrics.get(i).setClassInPackage(this.fileMetrics.get(j));
 				}
@@ -307,8 +300,7 @@ public class AverageLocCalculationC
 			{
 				// for each class
 				FileMetricsC current = currentVersion.get(j).getClassInProject().get(i);
-				
-				System.out.println("---------- " + current.getClassName());
+
 				if (previous.containsKey(currentVersion.get(j).getClassInProject().get(i).getClassName()))
 				{
 					
@@ -325,19 +317,17 @@ public class AverageLocCalculationC
 					
 					FileMetricsC previousClass = previous.get(currentVersion.get(j).getClassInProject().get(i).getClassName());
 					
-					System.out.println("Old average loc before multis: " + previousClass.getAverageNocChange());
+					//System.out.println("Old average loc before multis: " + previousClass.getAverageNocChange());
 					double oldLoc = Math.round(previousClass.getAverageNocChange() * (v-2));
-					System.out.println("Old average loc: " + oldLoc);
-					// TODO
-					//  java.lang.IndexOutOfBoundsException: Index 7 out of bounds for length 7
-					System.out.println("Current LOC: " + current.getNcloc());
-					System.out.println("Previous LOC: " + previousClass.getNcloc());
+					//System.out.println("Old average loc: " + oldLoc);
+					//System.out.println("Current LOC: " + current.getNcloc());
+					//System.out.println("Previous LOC: " + previousClass.getNcloc());
 					double currentLoc = Math.abs(current.getNcloc() - previousClass.getNcloc());
 
 					double loc = (oldLoc + currentLoc) / (v-1); 
-					System.out.println("Before and after: " + oldLoc + " " + loc);
-					System.out.println("For class: " + current.getClassName() + 
-							" the loc is: " + loc);
+					//System.out.println("Before and after: " + oldLoc + " " + loc);
+					//System.out.println("For class: " + current.getClassName() + 
+							//" the loc is: " + loc);
 					currentVersion.get(j).getClassInProject().get(i).setAverageInterest(loc);
 				}
 		
@@ -349,7 +339,7 @@ public class AverageLocCalculationC
 	{	
 		for (int i = 0; i < currentVersion.size(); i++)
 		{
-			System.out.println("---------- Package: " + currentVersion.get(i).getPackageName());
+			//System.out.println("---------- Package: " + currentVersion.get(i).getPackageName());
 			if (previous.containsKey(currentVersion.get(i).getPackageName()))
 			{
 				
@@ -370,10 +360,10 @@ public class AverageLocCalculationC
 				double currentLoc = Math.abs(currentVersion.get(i).getNcloc() - c.getNcloc());
 				
 				double loc = (oldLoc + currentLoc) / (v-1);  
-				System.out.println("Before and after: " + oldLoc + " " + loc);
+				//System.out.println("Before and after: " + oldLoc + " " + loc);
 				
-				System.out.println("For package: " + currentVersion.get(i).getPackageName() + 
-						" the loc is: " + loc);
+				//System.out.println("For package: " + currentVersion.get(i).getPackageName() + 
+						//" the loc is: " + loc);
 				currentVersion.get(i).setAverageInterest(loc);
 			}
 		}

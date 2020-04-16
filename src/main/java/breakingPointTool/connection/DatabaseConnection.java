@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class DatabaseConnection 
 {
-	private static final String METRICS_DRIVER = "org.gjt.mm.mysql.Driver";
+	private static final String METRICS_DRIVER = "com.mysql.cj.jdbc.Driver";
 	private static String METRICS_URL = "";
 	private static String METRICS_USERNAME = "";
 	private static String METRICS_PASSWORD = "";

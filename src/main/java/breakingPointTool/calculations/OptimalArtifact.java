@@ -34,9 +34,19 @@ public class OptimalArtifact
     		double Size1 = similarClasses.get(i).getName().getSize1();
     		double Size2 = similarClasses.get(i).getName().getSize2();
     		
+    		System.out.println("Find optimal for class: " + similarClasses.get(i).getName().getClassName());
+
+    		// Check only the 5 or less most similar
+        	int sizeOfArtifacts = similarClasses.get(i).getSimilarClasses().size();
+        	
+        	if (sizeOfArtifacts > 5)
+        		sizeOfArtifacts = 4;
+    		
     		// Values from similar classes
-    		for (int j = 0; j < similarClasses.get(i).getSimilarClasses().size(); j++)
+    		for (int j = 0; j < sizeOfArtifacts; j++)
     		{
+    			System.out.println("Class name: " + similarClasses.get(i).getSimilarClasses().get(j).getClassName() );
+
     			if (similarClasses.get(i).getSimilarClasses().get(j).getDit() < Dit)
     				Dit = similarClasses.get(i).getSimilarClasses().get(j).getDit();
     			if (similarClasses.get(i).getSimilarClasses().get(j).getNocc() < Nocc)
@@ -98,9 +108,19 @@ public class OptimalArtifact
     		double Size1 = similarPackages.get(i).getPackage().getSize1();
     		double Size2 = similarPackages.get(i).getPackage().getSize2();
     		
+    		System.out.println("Find optimal for class: " + similarPackages.get(i).getPackage().getPackageName());
+
+    		// Check only the 5 or less most similar
+        	int sizeOfArtifacts = similarPackages.get(i).getSimilarPackages().size();
+        	
+        	if (sizeOfArtifacts > 5)
+        		sizeOfArtifacts = 4;
+    		
     		// Values from similar classes
-    		for (int j = 0; j < similarPackages.get(i).getSimilarPackages().size(); j++)
+    		for (int j = 0; j < sizeOfArtifacts; j++)
     		{
+    			System.out.println("Package Name: " + similarPackages.get(i).getSimilarPackages().get(j).getPackageName());
+
     			if (similarPackages.get(i).getSimilarPackages().get(j).getDit() > Dit)
     				Dit = similarPackages.get(i).getSimilarPackages().get(j).getDit();
     			if (similarPackages.get(i).getSimilarPackages().get(j).getNocc() > Nocc)

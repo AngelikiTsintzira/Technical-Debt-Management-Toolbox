@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import com.mysql.jdbc.Statement;
+import java.sql.Statement;
 
 import main.java.breakingPointTool.connection.DatabaseConnection;
 
@@ -132,5 +132,54 @@ public class DatabaseSaveData
 			System.out.println("Database request failed. Please try again!");
 		} 
 		//System.out.println("Calculated Breaking Point - Interest - Pricipal saved in database successfully!");
+	}
+	
+	public void saveTimestamp(String projectName, int versionNum) throws SQLException
+	{
+		Statement stmt = null;
+		Connection conn = DatabaseConnection.getConnection();
+
+		try {
+			stmt = (Statement) conn.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String query = "INSERT INTO executionTimestap (project_name, version)  VALUES('"
+				+ projectName + "'," + versionNum +  ") ON DUPLICATE KEY UPDATE project_name = '" + projectName
+				+ "';";
+		stmt.executeUpdate(query);
+
+		if (stmt != null) 
+		{
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void deleteTimestamp(String projectName, int versionNum) throws SQLException
+	{
+		Statement stmt = null;
+		Connection conn = DatabaseConnection.getConnection();
+
+		try {
+			stmt = (Statement) conn.createStatement();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String query = "DELETE FROM executionTimestap WHERE project_name = '" + projectName 
+				+ "' and version=" + versionNum + ";";
+		stmt.executeUpdate(query);
+
+		if (stmt != null) 
+		{
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

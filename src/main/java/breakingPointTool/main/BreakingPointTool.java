@@ -12,8 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -22,9 +24,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 
-import com.mysql.jdbc.DatabaseMetaData;
-import com.mysql.jdbc.Statement;
 import main.java.breakingPointTool.api.ApiCall;
+import main.java.breakingPointTool.artifact.PackageMetricsC;
 import main.java.breakingPointTool.artifact.ProjectArtifact;
 import main.java.breakingPointTool.calculations.AverageLocCalculation;
 import main.java.breakingPointTool.calculations.AverageLocCalculationC;
@@ -32,6 +33,8 @@ import main.java.breakingPointTool.calculations.FindSimilarArtifacts;
 import main.java.breakingPointTool.calculations.FindSimilarArtifactsC;
 import main.java.breakingPointTool.calculations.OptimalArtifact;
 import main.java.breakingPointTool.calculations.OptimalArtifactC;
+import main.java.breakingPointTool.calculations.Results;
+import main.java.breakingPointTool.calculations.ResultsC;
 import main.java.breakingPointTool.connection.DatabaseConnection;
 import main.java.breakingPointTool.connection.SonarDatabaseConnection;
 import main.java.breakingPointTool.database.DatabaseGetData;
@@ -66,7 +69,7 @@ public class BreakingPointTool
 {
 	private static Scanner keyboard;
 
-	public static void main(String [ ] args) throws IOException, InterruptedException, NumberFormatException, SQLException, JSONException, SAXException, ParserConfigurationException
+	public static void main(String [ ] args) throws IOException, InterruptedException, NumberFormatException, SQLException, JSONException, SAXException, ParserConfigurationException, InstantiationException, IllegalAccessException
 	{	
 		// Passing parameters through stream 
 		String projectName = null, jarName = null, language = null;
@@ -138,11 +141,15 @@ public class BreakingPointTool
 		String sonarName = "";
 		String serverName = "";
 		String dbName = "";
-		
 
 		java.net.URL jarLocationUrl = BreakingPointTool.class.getProtectionDomain().getCodeSource().getLocation();
 		String jarLocation = new File(jarLocationUrl.toString()).getParent();
 		jarLocation = jarLocation.replace("file:", "");
+
+		// for eclipse execution
+		int t = jarLocation.lastIndexOf("/");
+		jarLocation = jarLocation.substring(0,t);
+
 		String credentials = jarLocation + "/configurations.txt";
 
 		if (new File(jarLocation + "/configurations.txt").exists()) 
@@ -166,7 +173,7 @@ public class BreakingPointTool
 					String[] temp = line.split("passwordSQDB:"); 
 					passwordSQ = temp[1];
 				} 
-				
+
 				// Metrics Database Credentials
 				if (line.contains("username=")) 
 				{ 
@@ -185,45 +192,45 @@ public class BreakingPointTool
 					String[] temp = line.split("sonarqube_execution:"); 
 					exec = temp[1]; 
 				}
-	
+
 				if (line.contains("project_path:")) 
 				{ 
 					String[] temp = line.split("project_path:"); 
 					projectPath = temp[1]; 
 				}
-	
+
 				if (line.contains("jar_path:")) 
 				{ 
 					String[] temp = line.split("jar_path:");
 					jarPath = temp[1]; 
 				}
-	
+
 				if (line.contains("sonar_url:")) 
 				{ 	
 					String[] temp = line.split("sonar_url:");
 					serverUrl = temp[1]; 
 				}
-				
+
 				if (line.contains("sonarName:"))
 				{
 					String[] temp = line.split("sonarName:");
 					sonarName = temp[1];
 				}
-				
+
 				//  Metrics DB credentials
 				if (line.contains("serverName="))
 				{
 					String[] temp = line.split("serverName=");
 					serverName = temp[1];
 				}
-				
+
 				if (line.contains("databaseName="))
 				{
 					String[] temp = line.split("databaseName=");
 					dbName = temp[1];
 				}
-				
-				
+
+
 				// SonarQube Execution Credentials
 				if (line.contains("usernameSQ:")) 
 				{ 
@@ -233,7 +240,7 @@ public class BreakingPointTool
 						usernameSQConnection = temp[1]; 
 					}
 				}
-	
+
 				if (line.contains("passwordSQ:")) 
 				{  
 					if (line.length() > 11) 
@@ -260,6 +267,13 @@ public class BreakingPointTool
 			DatabaseGetData dbCall = new DatabaseGetData(projectName);	
 
 			if (typeAnalysis == 1) {
+				
+				DatabaseSaveData dbSave = new DatabaseSaveData();
+				for (int i = 0; i < versionsNum; i ++)
+				{	
+					dbSave.saveTimestamp(projectName, i);
+				}
+				
 				for (int i = 0; i < versionsNum; i ++)
 				{
 					// Ripple Effect and Change Proneness Measure Execution
@@ -304,15 +318,15 @@ public class BreakingPointTool
 					v.setPackageInProject(calcAverageAllLevels.getObjectsPackageMetrics());
 					//artifactLongNamesPackage.clear();
 
-					
+
 					for (int j = 0; j < v.getPackages().size(); j++)
 					{
 						String pack1 = v.getPackages().get(j).getPackageName();
-						
+
 						for (int l = 0; l < metricsFromSonarPackageLevel.getArtifactNames().size(); l++)
 						{
 							String pack2 = metricsFromSonarPackageLevel.getArtifactNames().get(l);
-							
+
 							if (pack2.contains(pack1))
 							{
 								v.getPackages().get(j).metricsfromSonar(metricsFromSonarPackageLevel.getNumOfClasses().get(l),
@@ -335,21 +349,21 @@ public class BreakingPointTool
 										metricsFromSonarPackageLevel.getComplexity().get(l), metricsFromSonarPackageLevel.getFunctions().get(l),
 										metricsFromSonarPackageLevel.getNcloc().get(l), metricsFromSonarPackageLevel.getStatements().get(l),
 										0, language);
-								
-							break;
+
+								break;
 							}
-							
+
 						}
-						
+
 						// set sonar metrics in class level
 						for (int k = 0; k < v.getPackages().get(j).getClassInProject().size(); k++)
 						{
 							String class1 = v.getPackages().get(j).getClassInProject().get(k).getClassName();
-							
+
 							for (int l = 0; l < metricsFromSonarClassLevel.getArtifactNames().size(); l++)
 							{
 								String class2 = metricsFromSonarClassLevel.getArtifactNames().get(l);
-								
+
 								if (class2.contains(class1))
 								{
 									v.getPackages().get(j).getClassInProject().get(k).metricsfromSonar(metricsFromSonarClassLevel.getNumOfClasses().get(l),
@@ -371,15 +385,16 @@ public class BreakingPointTool
 											metricsFromSonarClassLevel.getComplexity().get(l), metricsFromSonarClassLevel.getFunctions().get(l),
 											metricsFromSonarClassLevel.getNcloc().get(l), metricsFromSonarClassLevel.getStatements().get(l),
 											0, language);
-									
+
 									break;
 								}
 							}
 						}
 					}
-								
+
 					projectArtifacts.setVersion(v);
 					dbCall.clearData();
+					
 
 				} // End of FOR of versions
 
@@ -401,12 +416,26 @@ public class BreakingPointTool
 					OptimalArtifact optimalClass = new OptimalArtifact();
 					optimalClass.calculateOptimalClass(similarCl, i);
 
-					OptimalArtifact optimalPackage = new OptimalArtifact();
-					optimalPackage.calculateOptimalPackage(similarPck, i);
+					if (similarPckC.size() == 1)
+					{
+						Results rs = new Results();
+						rs.calculateInterestOnePackage(similarPck.get(0).getPackage(), projectName, i);
+					}
+					else
+					{
+						OptimalArtifact optimalPackage = new OptimalArtifact();
+						optimalPackage.calculateOptimalPackage(similarPck, i);
+					} 
+					
+					dbSave.deleteTimestamp(projectName, i);
 				}
 			}
 			else if (typeAnalysis == 2)
 			{
+				
+				DatabaseSaveData dbSave = new DatabaseSaveData();
+				dbSave.saveTimestamp(projectName, versionsNum - 1);
+				
 				// Get metrics from Database from previous version
 				GetAnalysisDataJava classMetrics = new GetAnalysisDataJava();
 				classMetrics.getAnalysisDataBPTJava(projectName, "FIL", Integer.toString(versionsNum - 2));
@@ -470,11 +499,11 @@ public class BreakingPointTool
 				for (int j = 0; j < v.getPackages().size(); j++)
 				{
 					String pack1 = v.getPackages().get(j).getPackageName();
-					
+
 					for (int l = 0; l < metricsFromSonarPackageLevel.getArtifactNames().size(); l++)
 					{
 						String pack2 = metricsFromSonarPackageLevel.getArtifactNames().get(l);
-						
+
 						if (pack2.contains(pack1))
 						{
 							v.getPackages().get(j).metricsfromSonar(metricsFromSonarPackageLevel.getNumOfClasses().get(l),
@@ -497,21 +526,21 @@ public class BreakingPointTool
 									metricsFromSonarPackageLevel.getComplexity().get(l), metricsFromSonarPackageLevel.getFunctions().get(l),
 									metricsFromSonarPackageLevel.getNcloc().get(l), metricsFromSonarPackageLevel.getStatements().get(l),
 									0, language);
-							
-						break;
+
+							break;
 						}
-						
+
 					}
-					
+
 					// set sonar metrics in class level
 					for (int k = 0; k < v.getPackages().get(j).getClassInProject().size(); k++)
 					{
 						String class1 = v.getPackages().get(j).getClassInProject().get(k).getClassName();
-						
+
 						for (int l = 0; l < metricsFromSonarClassLevel.getArtifactNames().size(); l++)
 						{
 							String class2 = metricsFromSonarClassLevel.getArtifactNames().get(l);
-							
+
 							if (class2.contains(class1))
 							{
 								v.getPackages().get(j).getClassInProject().get(k).metricsfromSonar(metricsFromSonarClassLevel.getNumOfClasses().get(l),
@@ -533,13 +562,13 @@ public class BreakingPointTool
 										metricsFromSonarClassLevel.getComplexity().get(l), metricsFromSonarClassLevel.getFunctions().get(l),
 										metricsFromSonarClassLevel.getNcloc().get(l), metricsFromSonarClassLevel.getStatements().get(l),
 										0, language);
-								
+
 								break;
 							}
 						}
 					}
 				}
-				
+
 				projectArtifacts.setVersion(v);
 				dbCall.clearData();
 
@@ -561,15 +590,27 @@ public class BreakingPointTool
 				OptimalArtifact optimalClass = new OptimalArtifact();
 				optimalClass.calculateOptimalClass(similarCl, versionsNum-1);
 
-				OptimalArtifact optimalPackage = new OptimalArtifact();
-				optimalPackage.calculateOptimalPackage(similarPck, versionsNum-1);
+				//OptimalArtifact optimalPackage = new OptimalArtifact();
+				//optimalPackage.calculateOptimalPackage(similarPck, versionsNum-1);
+				
+				if (similarPckC.size() == 1)
+				{
+					Results rs = new Results();
+					rs.calculateInterestOnePackage(similarPck.get(0).getPackage(), projectName, versionsNum - 1);
+				}
+				else
+				{
+					OptimalArtifact optimalPackage = new OptimalArtifact();
+					optimalPackage.calculateOptimalPackage(similarPck, versionsNum-1);
+				} 
 
+				dbSave.deleteTimestamp(projectName, versionsNum - 1);
 
 			}
 
 
 			// CHECK DATA PRINT
-		/*
+			/*
 			for (int i = 0; i < versionsNum; i++)
 			{
 				System.out.println("Project ID: " + projectArtifacts.getProjectName());
@@ -592,7 +633,7 @@ public class BreakingPointTool
 				}
 				System.out.println("---------");
 			}*/
-		 
+
 		}
 		else if (language.equals("C") || language.equals("C++"))
 		{
@@ -600,6 +641,12 @@ public class BreakingPointTool
 			DatabaseGetData dbCall = new DatabaseGetData(projectName);	
 			if (typeAnalysis == 1) 
 			{
+				DatabaseSaveData dbSave = new DatabaseSaveData();
+				for (int i = 0; i < versionsNum; i ++)
+				{	
+					dbSave.saveTimestamp(projectName, i);
+				}
+				
 				for (int i = 0; i < versionsNum; i ++)
 				{
 					String p = projectPath + File.separator + projectName + File.separator + projectName + i;
@@ -627,7 +674,7 @@ public class BreakingPointTool
 						if (pc.contains("test"))
 							continue;
 						String[] tempPackage = pc.split(":");
-						
+
 						if (tempPackage.length == 1)
 							continue;
 						//String[] temp1 = tempPackage[1].split(".java");
@@ -646,9 +693,10 @@ public class BreakingPointTool
 
 					projectArtifacts.setVersion(v);
 					dbCall.clearData();
+					
 
 				} 
-
+				
 				// Calculate LOC
 				AverageLocCalculationC calcAverageAllLevels = new AverageLocCalculationC();
 				calcAverageAllLevels.calculateLocPackageLevel(projectArtifacts);
@@ -668,16 +716,30 @@ public class BreakingPointTool
 					OptimalArtifactC optimalClass = new OptimalArtifactC();
 					optimalClass.calculateOptimalClass(similarClC, i);
 
-					OptimalArtifactC optimalPackage = new OptimalArtifactC();
-					optimalPackage.calculateOptimalPackage(similarPckC, i); 
+					// If only one package
+					if (similarPckC.size() == 1)
+					{
+						ResultsC rs = new ResultsC();
+						rs.calculateInterestOnePackage(similarPckC.get(0).getPackage(), projectName, i);
+					}
+					else
+					{
+						OptimalArtifactC optimalPackage = new OptimalArtifactC();
+						optimalPackage.calculateOptimalPackage(similarPckC, i); 
+					} 
+					
+					dbSave.deleteTimestamp(projectName, i);
 				}
 			}
 
 			else if (typeAnalysis == 2)
 			{
+				
+				DatabaseSaveData dbSave = new DatabaseSaveData();
+				dbSave.saveTimestamp(projectName, versionsNum - 1);
 
 				String p = projectPath + File.separator + projectName + File.separator + projectName + (versionsNum - 1);
-				
+
 				// Get metrics from Database from previous version
 				GetAnalysisDataJava classMetrics = new GetAnalysisDataJava();
 				classMetrics.getAnalysisDataC(projectName, "FIL", versionsNum - 2);
@@ -751,10 +813,19 @@ public class BreakingPointTool
 				// Calculate Optimal Class
 				OptimalArtifactC optimalClass = new OptimalArtifactC();
 				optimalClass.calculateOptimalClass(similarClC, versionsNum-1);
+				
+				if (similarPckC.size() == 1)
+				{
+					ResultsC rs = new ResultsC();
+					rs.calculateInterestOnePackage(similarPckC.get(0).getPackage(), projectName, versionsNum-1);
+				}
+				else
+				{
+					OptimalArtifactC optimalPackage = new OptimalArtifactC();
+					optimalPackage.calculateOptimalPackage(similarPckC, versionsNum-1); 
+				}
 
-				OptimalArtifactC optimalPackage = new OptimalArtifactC();
-				optimalPackage.calculateOptimalPackage(similarPckC, versionsNum-1); 
-
+				dbSave.deleteTimestamp(projectName, versionsNum - 1);
 
 			}
 
@@ -791,7 +862,7 @@ public class BreakingPointTool
 		{
 			System.out.println("Programming language does not supported. Execute the software again and choose one of the available options.");
 		}
-		
+
 		deleteFile(versionsNum);
 	}
 
@@ -880,35 +951,35 @@ public class BreakingPointTool
 			file = "output" + i + ".csv";
 			delete(file);
 		}
-		
+
 		delete("output.csv");
 		delete("metrics.txt");
 		delete("rem_and_cpm_metrics_classLevel.csv");
 		delete("rem_and_cpm_metrics_packageLevel.csv");
 	}
-	
+
 	public static void delete(String file)
 	{
 		try
-        { 
-            Files.deleteIfExists(Paths.get(file)); 
-        } 
-        catch(NoSuchFileException e) 
-        { 
-            System.out.println("No such file/directory exists"); 
-        } 
-        catch(DirectoryNotEmptyException e) 
-        { 
-            System.out.println("Directory is not empty."); 
-        } 
-        catch(IOException e) 
-        { 
-            System.out.println("Invalid permissions."); 
-        } 
-          
-        System.out.println("Deletion successful."); 
+		{ 
+			Files.deleteIfExists(Paths.get(file)); 
+		} 
+		catch(NoSuchFileException e) 
+		{ 
+			System.out.println("No such file/directory exists"); 
+		} 
+		catch(DirectoryNotEmptyException e) 
+		{ 
+			System.out.println("Directory is not empty."); 
+		} 
+		catch(IOException e) 
+		{ 
+			System.out.println("Invalid permissions."); 
+		} 
+
+		System.out.println("Deletion successful."); 
 	}
-	
+
 	// Check if tables are created, if not, create them
 	public static void createDatabaseTables() throws SQLException
 	{
@@ -947,7 +1018,7 @@ public class BreakingPointTool
 					"  `comment_lines_density` double(100,0) DEFAULT NULL,\n" + 
 					"  `language` varchar(500) NOT NULL\n" + 
 					") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
-			
+
 			stmt.executeUpdate(query);
 
 			if (stmt != null) {
@@ -991,7 +1062,7 @@ public class BreakingPointTool
 					"  `coupling` double DEFAULT '0',\n" + 
 					"  `cohesion` double DEFAULT '0'\n" + 
 					") ENGINE=InnoDB DEFAULT CHARSET=latin1;";
-			
+
 			stmt.executeUpdate(query);
 
 			if (stmt != null) {
@@ -1062,7 +1133,7 @@ public class BreakingPointTool
 					"  `rem` double DEFAULT '0',\n" + 
 					"  `cpm` double DEFAULT '0'\n" + 
 					") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-			
+
 			stmt.executeUpdate(query);
 
 			if (stmt != null) {
@@ -1074,5 +1145,4 @@ public class BreakingPointTool
 			}
 		}
 	}
-
 }

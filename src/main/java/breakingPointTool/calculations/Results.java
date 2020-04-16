@@ -8,7 +8,6 @@ import main.java.breakingPointTool.artifact.PackageMetrics;
 import main.java.breakingPointTool.database.DatabaseGetData;
 import main.java.breakingPointTool.database.DatabaseSaveData;
 
-
 public class Results 
 {
 	private static final double MINUTES_IN_HOUR = 60.0;
@@ -142,26 +141,6 @@ public class Results
     
     public double calculateInterestProbability(String artifact, int version)
     {
-    	/*ArrayList<Double> ks = new ArrayList<Double>();  	
-    	double flag = 0.0;
-    	// Get k values from database
-    	DatabaseGetData db = new DatabaseGetData();
-    	ks.addAll(db.getKForArtifact(artifact));
-    	
-    	for (int i = 0; i < ks.size(); i++ )
-    	{
-    		if (ks.get(i) > 0)
-    		{
-    			flag++;
-    		}
-    	}
-    	if (k > 0)
-    		flag++;
-    	System.out.println("Division size: " + ks.size());*/
-    	
-    	// ##########################################
-    	
-    	
     	ArrayList<Double> locs = new ArrayList<Double>();
     	double flag = 0.0;
     	// Get k values from database
@@ -196,6 +175,50 @@ public class Results
     	return flag / (locs.size()-1);
 	
     }
+    
+    public void calculateInterestOnePackage(PackageMetrics investigatedPackage, String projectName, int version) throws SQLException
+	{
+		ArrayList<Double> interests = new ArrayList<Double>();
+
+		DatabaseGetData dbCall = new DatabaseGetData();
+		interests.addAll(dbCall.getInterestForArtifactC(projectName, version));
+		
+		for (int i = 0; i < interests.size()-1; i++ )
+		{
+			this.interest =  this.interest +  interests.get(i);
+		}
+		
+		double k = investigatedPackage.getAverageLocChange();
+
+		System.out.println("----- Only one package -----");
+		System.out.println("Package Name: " + investigatedPackage.getPackageName());
+		System.out.println("Interest is: " + interest);
+		System.out.println("K: " + k);
+		
+		calculatePrincipalPackage(investigatedPackage);
+		calculateBreakingPoint();
+
+		if (Double.isInfinite(this.breakingPoint))
+		{
+			// It means infinity
+			this.breakingPoint = -1;
+		}
+		else if (Double.isNaN(breakingPoint))
+		{
+			// It means it is not defined
+			this.breakingPoint = -2;
+		}
+
+		double rate = calculateInterestProbability(investigatedPackage.getPackageName(), version);
+		
+		DatabaseSaveData saveDataInDatabase = new DatabaseSaveData();
+		System.out.println("Before saved in database: " + investigatedPackage.getPackageName() + " " + version + " " +
+				this.breakingPoint + " " + this.principal + " " + this.interest + " " + k + " " + rate);
+		saveDataInDatabase.saveBreakingPointInDatabase(investigatedPackage.getPackageName(), version, this.breakingPoint, this.principal, this.interest, k, rate);
+		saveDataInDatabase.updatePrincipal(investigatedPackage.getPackageName(), version, this.principal);
+		
+		
+	}
     
     public void calculatePrincipalPackage(PackageMetrics testedClass)
     {

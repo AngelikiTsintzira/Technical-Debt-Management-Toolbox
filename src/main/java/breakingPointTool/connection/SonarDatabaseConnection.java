@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class SonarDatabaseConnection 
 {
-	private static final String SONAR_DRIVER = "org.gjt.mm.mysql.Driver";
+	private static final String SONAR_DRIVER = "com.mysql.cj.jdbc.Driver";
 	private static String SONAR_URL = "";
 	private static String SONAR_USERNAME = "";
 	private static String SONAR_PASSWORD = "";
@@ -21,7 +21,7 @@ public class SonarDatabaseConnection
 		SonarDatabaseConnection.SONAR_URL = "jdbc:mysql://" + sonar + "?useSSL=false&autoReconnect=true";
 	}
 
-	public static Connection getConnection() 
+	public static Connection getConnection() throws InstantiationException, IllegalAccessException 
 	{
 		if (connection != null) 
 		{
@@ -30,10 +30,10 @@ public class SonarDatabaseConnection
 		return createConnection();
 	}
 
-	private static Connection createConnection() 
+	private static Connection createConnection() throws InstantiationException, IllegalAccessException 
 	{
 		try {
-			Class.forName(SONAR_DRIVER);
+	          Class.forName(SONAR_DRIVER);
 			connection = DriverManager.getConnection(SONAR_URL, SONAR_USERNAME, SONAR_PASSWORD);
 			//connection = DriverManager.getConnection(url, username, password);
 		} catch (ClassNotFoundException | SQLException e) {

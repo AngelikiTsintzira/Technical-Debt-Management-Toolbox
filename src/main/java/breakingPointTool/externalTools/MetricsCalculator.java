@@ -58,9 +58,9 @@ public class MetricsCalculator
 		if(f.exists() && !f.isDirectory()) 
 		{ 
 			// Run On Docker in Server Command
-			String execution = "java -jar metrics_calculator.jar " + path + File.separator + projectName + File.separator + jarName + version + ".jar" + " output" + version + ".csv";
+			//String execution = "java -jar metrics_calculator.jar " + path + File.separator + projectName + File.separator + jarName + version + ".jar" + " output" + version + ".csv";
 			// if you execute from eclipse
-			//String execution = "java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv";
+			String execution = "java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv";
 			System.out.println(execution);
 			//Process metricsAnalysisProcess = Runtime.getRuntime()
 					//.exec("java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv");

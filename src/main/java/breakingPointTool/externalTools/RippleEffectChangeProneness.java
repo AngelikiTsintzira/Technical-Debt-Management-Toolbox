@@ -17,7 +17,8 @@ public class RippleEffectChangeProneness
 		String project = jarName + version;
 		
 		// Run On Docker in Server Command
-		path = javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar";
+		//path = javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar";
+		path = path + File.separator + projectName + File.separator + jarName + version + ".jar";
 
 		System.out.println(path);
 		// Check if jar file exists
@@ -49,9 +50,10 @@ public class RippleEffectChangeProneness
 
 				BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
+				// Print Output in terminal
 				String line;
 				while ((line = reader.readLine()) != null) {
-					System.out.println(line);
+					//System.out.println(line);
 				}
 
 				int exitCode = process.waitFor();
@@ -107,13 +109,13 @@ public class RippleEffectChangeProneness
 
 		ProcessBuilder processB = new ProcessBuilder();
 		// ******** execution from ide ************
-		//processB.command("java", "-jar", "externalTools/interest_probability.jar",
-				//System.getProperty("user.dir") + "/" + project);
+		processB.command("java", "-jar", "externalTools/interest_probability.jar",
+				System.getProperty("user.dir") + "/" + project);
 		
 		// ******** execution from jar ************
 		//System.out.println("^^^^^^^^REM execution folder " + System.getProperty("user.dir") + "/" + project);
-		processB.command("java", "-jar", "interest_probability.jar",
-			System.getProperty("user.dir") + "/" + project);
+		//processB.command("java", "-jar", "interest_probability.jar",
+			//System.getProperty("user.dir") + "/" + project);
 		// System.out.println("^^^^^^^ : " + System.getProperty("user.dir") + project);
 		//processB.directory(file);
 
@@ -122,10 +124,10 @@ public class RippleEffectChangeProneness
 			Process process = processB.start();
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
+			// Print output in terminal
 			String line;
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
+				//System.out.println(line);
 			}
 
 			int exitCode = process.waitFor();
@@ -187,7 +189,9 @@ public class RippleEffectChangeProneness
 			{
 				result = file.delete();
 				if (result)
-					System.out.println("File is deleted : " + file.getAbsolutePath());
+				{
+					//System.out.println("File is deleted : " + file.getAbsolutePath());
+				}
 				else
 					System.out.println("Error with the deletion of file");
 				
@@ -212,7 +216,9 @@ public class RippleEffectChangeProneness
 					result = file.delete();
 					
 					if (result)
-						System.out.println("File is deleted : " + file.getAbsolutePath());
+					{
+						//System.out.println("File is deleted : " + file.getAbsolutePath());
+					}
 					else
 						System.out.println("Error with the deletion of file");
 				}
@@ -225,7 +231,9 @@ public class RippleEffectChangeProneness
 			result = file.delete();
 			
 			if (result)
-				System.out.println("File is deleted : " + file.getAbsolutePath());
+			{
+				//System.out.println("File is deleted : " + file.getAbsolutePath());
+			}
 			else
 				System.out.println("Error with the deletion of file");
 		}

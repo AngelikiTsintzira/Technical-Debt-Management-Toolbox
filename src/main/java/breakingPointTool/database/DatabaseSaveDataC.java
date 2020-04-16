@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import com.mysql.jdbc.Statement;
-
+import java.sql.Statement;
 import main.java.breakingPointTool.connection.DatabaseConnection;
 
 public class DatabaseSaveDataC 

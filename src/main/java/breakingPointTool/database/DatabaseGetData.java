@@ -18,14 +18,13 @@ public class DatabaseGetData
 	private ArrayList<String> projectsIDs;
 	private ArrayList<String> projectsNames;
 	
-	public DatabaseGetData(String projectName)
+	public DatabaseGetData(String projectName) throws InstantiationException, IllegalAccessException
 	{
 		this.projectKees = new ArrayList<String>();
 		this.classesIDs = new ArrayList<String>();
 		this.packagesIDs = new ArrayList<String>();
 		this.projectsIDs = new ArrayList<String>();
 		this.projectsNames = new ArrayList<String>();
-		this.projectKees = new ArrayList<String>();
 		getKeeForProject(projectName);
 	}
 	
@@ -38,12 +37,12 @@ public class DatabaseGetData
 		this.projectsNames = new ArrayList<String>();
 	}
 	
-	public void DatabaseForPackages(String projectName) 
+	public void DatabaseForPackages(String projectName) throws InstantiationException, IllegalAccessException 
 	{
 		getDirectoriesForProject(projectName, kee);	
 	}
 	
-	public void DatabaseForProjects()
+	public void DatabaseForProjects() throws InstantiationException, IllegalAccessException
 	{
 		projectsNames = new ArrayList<String>();
 		projectsIDs = new ArrayList<String>();
@@ -96,7 +95,7 @@ public class DatabaseGetData
 	}
 	
 	
-	public void getKeeForProject(String projectName)
+	public void getKeeForProject(String projectName) throws InstantiationException, IllegalAccessException
 	{
 		Connection conn = SonarDatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
@@ -141,8 +140,8 @@ public class DatabaseGetData
 		}
 		System.out.println("Kee from project " + projectName+ " retrieved from database successfully!");
 	}
-	
-	public void getClassesForProject(String projectName, String kee)
+
+	public void getClassesForProject(String projectName, String kee) throws InstantiationException, IllegalAccessException
 	{
 		Connection conn = SonarDatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
@@ -183,7 +182,7 @@ public class DatabaseGetData
 		System.out.println("Classes from project " + projectName + " retrieved from database successfully!");		
 	}
 	
-	public void  getDirectoriesForProject(String projectName, String kee)
+	public void  getDirectoriesForProject(String projectName, String kee) throws InstantiationException, IllegalAccessException
 	{
 		Connection conn = SonarDatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
@@ -225,7 +224,7 @@ public class DatabaseGetData
 		//return keeDirectoryID;	
 	}
 	
-	public void  getAllProjects()
+	public void  getAllProjects() throws InstantiationException, IllegalAccessException
 	{
 		ArrayList<String> keeDirectoryID = new ArrayList<>();
 		Connection conn = SonarDatabaseConnection.getConnection();
@@ -478,6 +477,92 @@ public class DatabaseGetData
 			}
 		}
 		return k;
+	}
+	
+	public ArrayList<Double> getInterestForArtifactC(String projectName, int version)
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+		ResultSet resultSet = null;
+		ArrayList<Double> interest = new ArrayList<Double>();
+		String query;
+		
+		query = "SELECT interest FROM cMetrics WHERE project_name LIKE (?)  AND version = (?) and scope = 'FIL'";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setDouble(2, version);
+			resultSet = pstm.executeQuery();
+			while (resultSet.next()) 
+			{
+				interest.add(resultSet.getDouble("interest"));
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			System.out.println("Database select request failed. The project or the kee does not exist in the database."
+					+ "Please try again!");
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return interest;
+	}
+	
+	public ArrayList<Double> getInterestForArtifactJava(String projectName, int version)
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+		ResultSet resultSet = null;
+		ArrayList<Double> interest = new ArrayList<Double>();
+		String query;
+		
+		query = "SELECT interest FROM javaMetrics WHERE project_name LIKE (?)  AND version = (?) and scope = 'FIL'";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setDouble(2, version);
+			resultSet = pstm.executeQuery();
+			while (resultSet.next()) 
+			{
+				interest.add(resultSet.getDouble("interest"));
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			System.out.println("Database select request failed. The project or the kee does not exist in the database."
+					+ "Please try again!");
+		} finally {
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return interest;
 	}
 	
 	public void clearData()

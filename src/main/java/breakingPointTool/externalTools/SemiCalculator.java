@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class SemiCalculator 
 {
-	//private final String semi = "externalTools/metrics_calculators_noOop.jar";
-	private final String semi = "metrics_calculator_noOop.jar";
+	private final String semi = "externalTools/metrics_calculator_noOop.jar";
+	//private final String semi = "metrics_calculator_noOop.jar";
 
 
 	public void executeSemiCalculator(String language, int version, String path, String projectName, String credentials) throws IOException, InterruptedException
@@ -34,7 +34,7 @@ public class SemiCalculator
 		
 		// Run On Docker in Server Command
 		//String javaRunningDirectory = System.getProperty("user.dir");
-		//File f = new File(javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar");
+		//File f = new File(javaRunningDirectory + File.separator + projectName + File.separator + projectName + version + ".jar");
 		
 		// Jar file if you execute this tool from eclipse
 		File f = new File(path);
@@ -44,8 +44,8 @@ public class SemiCalculator
 		if(f.exists()) 
 		{ 
 			// Run On Docker in Server Command
-			String execution = "java -jar " + semi + " " + language + " " + projectName + " " + version + 
-					" " + path + " " + credentials;
+			//String execution = "java -jar " + semi + " " + language + " " + projectName + " " + version + 
+					//" " + path + " " + credentials;
 
 			// if you execute from eclipse
 			//String execution = "java -jar externalTools/metrics_calculator.jar " + System.getProperty("user.dir") + "/jars/" +jarName + version + ".jar" + " output" + version + ".csv";
@@ -75,7 +75,7 @@ public class SemiCalculator
 
 				String line;
 				while ((line = reader.readLine()) != null) {
-					System.out.println(line);
+					//System.out.println(line);
 				}
 
 				int exitCode = process.waitFor();
@@ -91,30 +91,6 @@ public class SemiCalculator
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
-			
-			/*
-			Process metricsAnalysisProcess = Runtime.getRuntime()
-					.exec(execution);
-			metricsAnalysisProcess.waitFor();
-			// If exit value is 0 then execution was successful
-			exitval = metricsAnalysisProcess.exitValue();
-
-			if (exitval != 0) 
-			{
-				System.out.println("An error occured during execution of Semi.The project didn't analyzed.");	
-			}
-			else
-			{
-				System.out.println("Semi Calculation Tool executed successfully!");
-			}
-			
-			metricsAnalysisProcess.destroy();
-			if (metricsAnalysisProcess.isAlive()) 
-			{
-				metricsAnalysisProcess.destroyForcibly();
-			}*/
-
 		}
 		else
 		{

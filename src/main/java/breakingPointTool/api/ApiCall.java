@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import org.json.JSONArray;
@@ -40,7 +41,9 @@ public class ApiCall {
 
 		for (String clIDs : classesIDs) {
 			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
+
+				CloseableHttpClient httpClient = HttpClients.createDefault();
+
 				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
 						+ "metricKeys=comment_lines_density" + "&component=" + clIDs);
 				getRequest.addHeader("accept", "application/json");
@@ -60,8 +63,6 @@ public class ApiCall {
 					JSONObject obj = new JSONObject(output);
 					JSONArray array = obj.getJSONObject("component").getJSONArray("measures");
 
-					//System.out.println(array);
-
 					for (int i = 0; i < array.length(); i++) 
 					{
 						//String metric = array.getJSONObject(i).getString("metric");
@@ -71,8 +72,7 @@ public class ApiCall {
 					}
 				}
 
-				httpClient.getConnectionManager().shutdown();
-				// httpClient.close();
+				httpClient.close();
 
 			} catch (ClientProtocolException e) {
 
@@ -109,7 +109,7 @@ public class ApiCall {
 
 			}
 			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
+				CloseableHttpClient httpClient = HttpClients.createDefault();
 				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
 						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements"
 						+ "&component=" + clIDs);
@@ -151,8 +151,7 @@ public class ApiCall {
 
 				} // end of while
 
-				httpClient.getConnectionManager().shutdown();
-				// httpClient.close();
+				httpClient.close();
 
 			} catch (ClientProtocolException e) {
 
@@ -183,7 +182,8 @@ public class ApiCall {
 
 		for (String clIDs : packagesIDs) {
 			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
+				CloseableHttpClient httpClient = HttpClients.createDefault();
+
 				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
 						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements"
 						+ "&component=" + clIDs);
@@ -220,8 +220,7 @@ public class ApiCall {
 						setFunctions(-1.0);
 				}
 
-				httpClient.getConnectionManager().shutdown();
-				// httpClient.close();
+				httpClient.close();
 
 			} catch (ClientProtocolException e) {
 
@@ -242,7 +241,8 @@ public class ApiCall {
 
 			}
 			try {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
+				CloseableHttpClient httpClient = HttpClients.createDefault();
+
 				HttpGet getRequest = new HttpGet(this.server + "/api/issues/search?" + "facetMode=effort"
 						+ "&facets=types" + "&componentKeys=" + clIDs);
 				getRequest.addHeader("accept", "application/json");
@@ -269,8 +269,7 @@ public class ApiCall {
 					//System.out.println(output);
 				}
 
-				httpClient.getConnectionManager().shutdown();
-				// httpClient.close();
+				httpClient.close();
 
 			} catch (ClientProtocolException e) {
 
