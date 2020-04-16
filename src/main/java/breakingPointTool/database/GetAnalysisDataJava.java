@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import main.java.breakingPointTool.artifact.ClassMetrics;
 import main.java.breakingPointTool.artifact.FileMetricsC;
 import main.java.breakingPointTool.artifact.PackageMetrics;
 import main.java.breakingPointTool.artifact.PackageMetricsC;
 import main.java.breakingPointTool.connection.DatabaseConnection;
-
 
 // This class gets the analysis results and analyzes a new version instead of all software
 public class GetAnalysisDataJava 
@@ -74,7 +74,8 @@ public class GetAnalysisDataJava
 			}
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database select request failed. The project or the kee does not exist in the database."
 					+ "Please try again!");
 		} finally {
@@ -82,14 +83,24 @@ public class GetAnalysisDataJava
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 			if (pstm != null) {
 				try {
 					pstm.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 		}
@@ -129,7 +140,8 @@ public class GetAnalysisDataJava
 			}
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database select request failed. The project or the kee does not exist in the database."
 					+ "Please try again!");
 		} finally {
@@ -137,19 +149,27 @@ public class GetAnalysisDataJava
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 			if (pstm != null) {
 				try {
 					pstm.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 		}
-		
-
 	}
 	
 	public void getAnalysisDataC(String projectName, String scope, int version) 
@@ -190,7 +210,8 @@ public class GetAnalysisDataJava
 
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database select request failed. The project or the kee does not exist in the database."
 					+ "Please try again!");
 		} finally {
@@ -198,14 +219,24 @@ public class GetAnalysisDataJava
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 			if (pstm != null) {
 				try {
 					pstm.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 		}
@@ -247,7 +278,8 @@ public class GetAnalysisDataJava
 			}
 
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database select request failed. The project or the kee does not exist in the database."
 					+ "Please try again!");
 		} finally {
@@ -255,14 +287,24 @@ public class GetAnalysisDataJava
 				try {
 					resultSet.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 			if (pstm != null) {
 				try {
 					pstm.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
 		}
@@ -300,8 +342,6 @@ public class GetAnalysisDataJava
         return packageMetricsList;
 	}
 	
-	
-	
 	public ArrayList<FileMetricsC> getClassMetricsC()
 	{
 		//Getting Collection of values       
@@ -333,7 +373,4 @@ public class GetAnalysisDataJava
 	{        
         return packageMetricsListC;
 	}
-
-
-
 }

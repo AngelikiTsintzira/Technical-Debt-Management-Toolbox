@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import main.java.breakingPointTool.connection.DatabaseConnection;
 
 public class DatabaseSaveData 
@@ -17,38 +17,73 @@ public class DatabaseSaveData
 	{
 		// Save metrics that calculated from metrics calculator tool in database
 
-		Statement stmt = null;
 		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
 
-		try {
-			stmt = (Statement) conn.createStatement();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		String query = "INSERT INTO javaMetrics (class_name,project_name,scope,wmc,dit,cbo,rfc,lcom,wmc_dec,nocc,mpc,dac,loc,number_of_properties,dsc,noh,ana,dam,dcc,camc,moa,mfa,nop,cis,nom,"
-				+ "reusability,flexibility,understandability,functionality,extendibility,effectiveness,fanIn,commit_hash,version,rem,cpm)  VALUES('"
-				+ className + "'," + "'" + projectName + "'," + "'" + scope + "'," + "" + wmc + "," + "" + dit + "," + "" + cbo
-				+ "," + "" + rfc + "," + "" + lcom + "," + "" + wmc_dec + "," + "" + nocc + "," + "" + mpc
-				+ "," + "" + dac + "," + "" + size1 + "," + "" + size2 + "," + "" + dsc + "," + "" + noh
-				+ "," + "" + ana + "," + "" + dam + "," + "" + dcc + "," + "" + camc + "," + "" + moa + ","
-				+ "" + mfa + "," + "" + nop + "," + "" + cis + "," + "" + nom + "," + "" + Reusability + ","
-				+ "" + Flexibility + "," + "" + Understandability + "," + "" + Functionality + "," + ""
-				+ Extendibility + "," + "" + Effectiveness + "," + "" + FanIn + "," + "'" + "empty"
-				+ "'," + "'" + versionNum + "'"     + "," + "" + rem    + "," + "" + cpm    + ") ON DUPLICATE KEY UPDATE class_name = '" + className
-				+ "';";
-		stmt.executeUpdate(query);
+		String query = "INSERT INTO javaMetrics (class_name,project_name,scope,wmc,dit,cbo,rfc,lcom,wmc_dec,nocc,mpc,dac,loc,number_of_properties,dsc,noh,ana,dam,dcc,camc,moa,mfa,nop,cis,nom," + 
+				"reusability,flexibility,understandability,functionality,extendibility,effectiveness,fanIn,commit_hash,version,rem,cpm) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE class_name=VALUES(class_name)";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, className);
+			pstm.setString(2, projectName);
+			pstm.setString(3, scope);
+			pstm.setDouble(4, wmc);
+			pstm.setDouble(5, dit);
+			pstm.setDouble(6, cbo);
+			pstm.setDouble(7, rfc);
+			pstm.setDouble(8, lcom);
+			pstm.setDouble(9, wmc_dec);
+			pstm.setDouble(10, nocc);
+			pstm.setDouble(11, mpc);
+			pstm.setDouble(12, dac);
+			pstm.setDouble(13, size1);
+			pstm.setDouble(14, size2);
+			pstm.setDouble(15, dsc);
+			pstm.setDouble(16, noh);
+			pstm.setDouble(17, ana);
+			pstm.setDouble(18, dam);
+			pstm.setDouble(19, dcc);
+			pstm.setDouble(20, camc);
+			pstm.setDouble(21, moa);
+			pstm.setDouble(22, mfa);
+			pstm.setDouble(23, nop);
+			pstm.setDouble(24, cis);
+			pstm.setDouble(25, nom);
+			pstm.setDouble(26, Reusability);
+			pstm.setDouble(27, Flexibility);
+			pstm.setDouble(28, Understandability);
+			pstm.setDouble(29, Functionality);
+			pstm.setString(30, String.valueOf(versionNum));
+			pstm.setDouble(31, rem);
+			pstm.setDouble(32, cpm);
+			pstm.executeUpdate();
 
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+		} catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
 			}
-		}
-
-		//System.out.println("Calculated Metrics saved in database successfully!");
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}	
 	}
-	
+
 	public void saveBreakingPointInDatabase(String className, int versionNum, double breakingPoint, double principal, double interest, double k, double rate) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
@@ -66,51 +101,90 @@ public class DatabaseSaveData
 			pstm.setString(6, className);
 			pstm.setDouble(7, versionNum);
 			pstm.executeUpdate();
-			
-			//conn.close();
-			
+
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database request failed. Please try again!");
 		} 
-		//System.out.println("Calculated Breaking Point - Interest - Pricipal saved in database successfully!");
-	}
-	
-	
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+	}	
+
 	public void savePrincipalMetrics(String className, String projectName, int version, double td, double principal,
 			double codeSmells, double bugs, double vulnerabilities, double duplications, String type, double classes, 
 			double complexity, double functions, double nloc, double statements, double comments_density, String language) throws SQLException, NumberFormatException, IOException
 	{
 		// Save metrics that calculated from metrics calculator tool in database
 
-		Statement stmt = null;
 		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
 
-		try {
-			stmt = (Statement) conn.createStatement();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		String query = "INSERT INTO principalMetrics (class_name, project_name, scope, version, td_minutes, principal, code_smells, bugs, "
-				+ "vulnerabilities, duplicated_lines_density, classes, complexity, functions, nloc, statements, comment_lines_density, language)  VALUES('"
-				+ className + "'," + "'" + projectName + "'," + "'"  + type + "'," + "'" + version + "'," + "" + td + "," + "" + principal + "," + "" + codeSmells
-				+ "," + "" + bugs + "," + "" + vulnerabilities + "," + "" + duplications  + "," + "" + classes + "," + "" + complexity + "," + "" + functions
-				+ "," + "" + nloc + "," + "" + statements + "," + "" + comments_density + "," + "'"  + language + "'"
-				+  ") ON DUPLICATE KEY UPDATE class_name = '" + className
-				+ "';";
-		stmt.executeUpdate(query);
+		String query = "INSERT INTO principalMetrics (class_name, project_name, scope, version, td_minutes, principal, code_smells, bugs," + 
+				"vulnerabilities, duplicated_lines_density, classes, complexity, functions, nloc, statements, comment_lines_density, language) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE class_name=VALUES(class_name)";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, className);
+			pstm.setString(2, projectName);
+			pstm.setString(3, type);
+			pstm.setDouble(4, version);
+			pstm.setDouble(5, td);
+			pstm.setDouble(6, principal);
+			pstm.setDouble(7, codeSmells);
+			pstm.setDouble(8, bugs);
+			pstm.setDouble(9, vulnerabilities);
+			pstm.setDouble(10, duplications);
+			pstm.setDouble(11, classes);
+			pstm.setDouble(12, complexity);
+			pstm.setDouble(13, functions);
+			pstm.setDouble(14, nloc);
+			pstm.setDouble(15, statements);
+			pstm.setDouble(16, comments_density);
+			pstm.setString(17, language);
+			pstm.executeUpdate();
 
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+		} catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
 			}
 		}
-
-		//System.out.println("Calculated Metrics saved in database successfully!");
 	}
-	
+
 	public void updatePrincipal(String className, int versionNum, double principal) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
@@ -124,61 +198,106 @@ public class DatabaseSaveData
 			pstm.setString(2, className);
 			pstm.setDouble(3, versionNum);
 			pstm.executeUpdate();
-			
-			//conn.close();
-			
+
 		} catch (SQLException ex) {
-			ex.printStackTrace();
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
 			System.out.println("Database request failed. Please try again!");
 		} 
-		//System.out.println("Calculated Breaking Point - Interest - Pricipal saved in database successfully!");
-	}
-	
-	public void saveTimestamp(String projectName, int versionNum) throws SQLException
-	{
-		Statement stmt = null;
-		Connection conn = DatabaseConnection.getConnection();
-
-		try {
-			stmt = (Statement) conn.createStatement();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		String query = "INSERT INTO executionTimestap (project_name, version)  VALUES('"
-				+ projectName + "'," + versionNum +  ") ON DUPLICATE KEY UPDATE project_name = '" + projectName
-				+ "';";
-		stmt.executeUpdate(query);
-
-		if (stmt != null) 
-		{
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
 			}
 		}
 	}
-	
+
+	public void saveTimestamp(String projectName, int versionNum) throws SQLException
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+
+		String query = "INSERT INTO executionTimestap (project_name, version) VALUES (?,?)";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setInt(2, versionNum);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+	}
+
 	public void deleteTimestamp(String projectName, int versionNum) throws SQLException
 	{
-		Statement stmt = null;
 		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
 
-		try {
-			stmt = (Statement) conn.createStatement();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		String query = "DELETE FROM executionTimestap WHERE project_name = '" + projectName 
-				+ "' and version=" + versionNum + ";";
-		stmt.executeUpdate(query);
-
-		if (stmt != null) 
+		String query = "DELETE FROM executionTimestap WHERE project_name = ? and version = ?";
+		try 
 		{
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setInt(2, versionNum);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
 			}
 		}
 	}

@@ -129,25 +129,25 @@ public class ApiCall {
 				while ((output = br.readLine()) != null) 
 				{
 
-						JSONObject obj = new JSONObject(output);
-						JSONArray array = obj.getJSONObject("component").getJSONArray("measures");
-						String name = obj.getJSONObject("component").getString("path");
+					JSONObject obj = new JSONObject(output);
+					JSONArray array = obj.getJSONObject("component").getJSONArray("measures");
+					String name = obj.getJSONObject("component").getString("path");
 
-						//System.out.println(array);
-						
-						String[] names = name.split("\\.java");
-						setArtifactnames(names[0]);
+					//System.out.println(array);
 
-						for (int i = 0; i < array.length(); i++) {
-							String metric = array.getJSONObject(i).getString("metric");
-							String value = array.getJSONObject(i).getString("value");
-							//System.out.println(metric + ": " + value);
-							findIssue(metric, Double.parseDouble(value));
-						}
+					String[] names = name.split("\\.java");
+					setArtifactnames(names[0]);
 
-						if (array.length() < 9)
-							setFunctions(-1.0);
-					
+					for (int i = 0; i < array.length(); i++) {
+						String metric = array.getJSONObject(i).getString("metric");
+						String value = array.getJSONObject(i).getString("value");
+						//System.out.println(metric + ": " + value);
+						findIssue(metric, Double.parseDouble(value));
+					}
+
+					if (array.length() < 9)
+						setFunctions(-1.0);
+
 
 				} // end of while
 
@@ -259,7 +259,7 @@ public class ApiCall {
 				String output;
 				while ((output = br.readLine()) != null) 
 				{
-					
+
 					String[] technicalDebt = output.split("effortTotal");
 					String[] temp = technicalDebt[1].split(",");
 					temp[0] = temp[0].replaceAll(":", "");

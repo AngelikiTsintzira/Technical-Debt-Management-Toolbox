@@ -18,14 +18,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Scanner;
-
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.json.JSONException;
 import org.xml.sax.SAXException;
-
 import main.java.breakingPointTool.api.ApiCall;
-import main.java.breakingPointTool.artifact.PackageMetricsC;
 import main.java.breakingPointTool.artifact.ProjectArtifact;
 import main.java.breakingPointTool.calculations.AverageLocCalculation;
 import main.java.breakingPointTool.calculations.AverageLocCalculationC;
