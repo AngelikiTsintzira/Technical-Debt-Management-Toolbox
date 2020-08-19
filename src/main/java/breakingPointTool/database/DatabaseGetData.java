@@ -47,7 +47,7 @@ public class DatabaseGetData
 	{
 		projectsNames = new ArrayList<String>();
 		projectsIDs = new ArrayList<String>();
-		getAllProjects();
+		//getAllProjects();
 	}
 
 	public ArrayList<Double> getCouplingCohesion(String fileName, int version)
@@ -260,7 +260,7 @@ public class DatabaseGetData
 		}
 		System.out.println("Directories from project " + projectName + " retrieved from database successfully!");	
 	}
-
+/*
 	public void  getAllProjects() throws InstantiationException, IllegalAccessException
 	{
 		ArrayList<String> keeDirectoryID = new ArrayList<>();
@@ -303,19 +303,14 @@ public class DatabaseGetData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
+
 		}
 		System.out.println("Projects retrieved from database successfully!");
 		processingForProjectsAndVersions(keeDirectoryID);	
 	}
-
+	*/
+	
+	/*
 	public void processingForProjectsAndVersions(ArrayList<String> kees)
 	{
 		int i = 1;
@@ -338,7 +333,8 @@ public class DatabaseGetData
 		}
 
 	}
-
+	*/
+/*
 	public ArrayList<String> getUniqueNames()
 	{
 		// Store unique items in result.
@@ -354,6 +350,7 @@ public class DatabaseGetData
 		}
 		return result;
 	}
+	*/
 
 	public ArrayList<Double> getKForArtifact(String className)
 	{

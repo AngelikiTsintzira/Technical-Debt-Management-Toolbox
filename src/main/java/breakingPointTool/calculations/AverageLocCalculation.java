@@ -91,6 +91,7 @@ public class AverageLocCalculation
 					cm.metricsfromMetricsCalculator(mpc, wmc, dit, nocc, rfc, lcom, wmc_dec, dac, size1, size2);
 					cm.metricsfromChangeProneness(list.get(0), list.get(1));
 					classMetrics.add(cm);
+					
 				}
 
 			}
@@ -347,6 +348,7 @@ public class AverageLocCalculation
 						}
 						
 						this.packageMetrics.get(i).metricsfromChangeProneness(list.get(0), list.get(1));
+						//this.packageMetrics.get(i).print();
 						
 					}
 				}

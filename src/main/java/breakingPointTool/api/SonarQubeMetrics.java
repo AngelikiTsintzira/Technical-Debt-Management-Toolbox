@@ -15,7 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ApiCall {
+public class SonarQubeMetrics {
 	private ArrayList<Double> classes;
 	private ArrayList<Double> complexity;
 	private ArrayList<Double> functions;
@@ -32,7 +32,7 @@ public class ApiCall {
 
 	private String server;
 
-	public ApiCall(String server) {
+	public SonarQubeMetrics(String server) {
 		this.server = server;
 	}
 
@@ -128,12 +128,9 @@ public class ApiCall {
 
 				while ((output = br.readLine()) != null) 
 				{
-
 					JSONObject obj = new JSONObject(output);
 					JSONArray array = obj.getJSONObject("component").getJSONArray("measures");
 					String name = obj.getJSONObject("component").getString("path");
-
-					//System.out.println(array);
 
 					String[] names = name.split("\\.java");
 					setArtifactnames(names[0]);
@@ -144,9 +141,28 @@ public class ApiCall {
 						//System.out.println(metric + ": " + value);
 						findIssue(metric, Double.parseDouble(value));
 					}
-
+					
 					if (array.length() < 9)
-						setFunctions(-1.0);
+					{
+						if (this.classes.size() < this.artifactNames.size())
+							setNumofClasses(0.0);
+						if (this.complexity.size() < this.artifactNames.size())
+							setComplexity(0.0);
+						if (this.statements.size() < this.artifactNames.size())
+							setStatements(0.0);
+						if (this.functions.size() < this.artifactNames.size())
+							setFunctions(0.0);
+						if(this.ncloc.size() < this.artifactNames.size())
+							setncloc(0.0);
+						if(this.codeSmells.size() < this.artifactNames.size())
+							setCodeSmells(0.0);
+						if(this.bugs.size() < this.artifactNames.size())
+							setBugs(0.0);
+						if (this.vulnerabilities.size() < this.artifactNames.size())
+							setVulnerabilities(0.0);
+						if(this.duplicated_lines_density.size() < this.artifactNames.size())
+							setDuplicationsDensity(0.0);
+					}
 
 
 				} // end of while
@@ -212,12 +228,30 @@ public class ApiCall {
 					for (int i = 0; i < array.length(); i++) {
 						String metric = array.getJSONObject(i).getString("metric");
 						String value = array.getJSONObject(i).getString("value");
-						//System.out.println(metric + ": " + value);
 						findIssue(metric, Double.parseDouble(value));
 					}
 
 					if (array.length() < 9)
-						setFunctions(-1.0);
+					{
+						if (this.classes.size() < this.artifactNames.size())
+							setNumofClasses(0.0);
+						if (this.complexity.size() < this.artifactNames.size())
+							setComplexity(0.0);
+						if (this.statements.size() < this.artifactNames.size())
+							setStatements(0.0);
+						if (this.functions.size() < this.artifactNames.size())
+							setFunctions(0.0);
+						if(this.ncloc.size() < this.artifactNames.size())
+							setncloc(0.0);
+						if(this.codeSmells.size() < this.artifactNames.size())
+							setCodeSmells(0.0);
+						if(this.bugs.size() < this.artifactNames.size())
+							setBugs(0.0);
+						if (this.vulnerabilities.size() < this.artifactNames.size())
+							setVulnerabilities(0.0);
+						if(this.duplicated_lines_density.size() < this.artifactNames.size())
+							setDuplicationsDensity(0.0);
+					}
 				}
 
 				httpClient.close();

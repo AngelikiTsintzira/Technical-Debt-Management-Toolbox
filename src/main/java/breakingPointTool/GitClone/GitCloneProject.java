@@ -10,6 +10,8 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
+import main.java.breakingPointTool.main.BreakingPointTool;
+
 // Clone Project from Git
 public class GitCloneProject 
 {
@@ -29,7 +31,10 @@ public class GitCloneProject
 	public void cloneCommits(String username, String password, ArrayList<String> sha, String git, String projectName, int version) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException
 	{
 		String javaRunningDirectory = System.getProperty("user.dir");
-		this.cloneProjectPath = javaRunningDirectory + "/Projects/" + projectName;
+		//this.cloneProjectPath = javaRunningDirectory + "/Projects/" + projectName;
+		
+		this.cloneProjectPath = BreakingPointTool.BASE_DIR + "/Projects/" + projectName;
+		
 		int ver = 0;
 	
 		// Public repository, no need for authorization

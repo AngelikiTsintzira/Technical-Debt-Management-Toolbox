@@ -14,7 +14,7 @@ public class TablesCreation
 	public void createDatabaseTables() throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
-		DatabaseMetaData dbm = (DatabaseMetaData) conn.getMetaData();
+		DatabaseMetaData dbm = conn.getMetaData();
 		ResultSet tables = dbm.getTables(null, null, "principalMetrics", null);
 		
 		if (tables.next()) 
@@ -25,7 +25,7 @@ public class TablesCreation
 		{
 			Statement stmt = null;
 			try {
-				stmt = (Statement) conn.createStatement();
+				stmt =  conn.createStatement();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -70,7 +70,7 @@ public class TablesCreation
 		{
 			Statement stmt = null;
 			try {
-				stmt = (Statement) conn.createStatement();
+				stmt =  conn.createStatement();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -105,7 +105,7 @@ public class TablesCreation
 
 		}
 
-		tables = null;
+		//tables = null;
 		tables = dbm.getTables(null, null, "javaMetrics", null);
 		if (tables.next()) 
 		{
@@ -115,7 +115,7 @@ public class TablesCreation
 		{
 			Statement stmt = null;
 			try {
-				stmt = (Statement) conn.createStatement();
+				stmt =  conn.createStatement();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

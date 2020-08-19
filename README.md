@@ -1,7 +1,7 @@
 # Technical-Debt-Management-ToolBox
 In the last years, the technical debt research community has been spending increasingly large effort on the different activities of Technical Debt Management (TDM). To a large extent, this research is focusing on issues related to cost and benefit analysis of software quality management.  
 
-Technical Debt Management ToolBox is a ToolBox developed in context of a European Union project H2020 (SDK4ED - https://sdk4ed.eu). It provides analysis in all aspects of technical debt (TD principal, TD interest, TD breaking point, TD interest probability).
+Technical Debt Management ToolBox is a ToolBox developed in the context of a European Union project H2020 (SDK4ED - https://sdk4ed.eu). It provides version history analysis in all aspects of technical debt (TD principal, TD interest, TD breaking point, TD interest probability).
 
 # Definition of Technical Debt (TD)
 **Technical debt is a software engineering metaphor, referring to the eventual financial consequences of trade-offs between shrinking product time to market and poorly specifying, or implementing a software product, throughout all development phases.** 

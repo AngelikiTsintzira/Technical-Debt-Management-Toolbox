@@ -7,29 +7,36 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRefNameException;
 import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
+
 import org.json.JSONException;
 import org.xml.sax.SAXException;
 
 import main.java.breakingPointTool.GitClone.GitCloneProject;
-import main.java.breakingPointTool.api.ApiCall;
+import main.java.breakingPointTool.api.SonarQubeArtifacts;
+import main.java.breakingPointTool.api.SonarQubeMetrics;
 import main.java.breakingPointTool.artifact.ProjectArtifact;
 import main.java.breakingPointTool.calculations.AverageLocCalculation;
 import main.java.breakingPointTool.calculations.AverageLocCalculationC;
@@ -41,7 +48,6 @@ import main.java.breakingPointTool.calculations.Results;
 import main.java.breakingPointTool.calculations.ResultsC;
 import main.java.breakingPointTool.connection.DatabaseConnection;
 import main.java.breakingPointTool.connection.SonarDatabaseConnection;
-import main.java.breakingPointTool.database.DatabaseGetData;
 import main.java.breakingPointTool.database.DatabaseSaveData;
 import main.java.breakingPointTool.database.GetAnalysisDataJava;
 import main.java.breakingPointTool.database.TablesCreation;
@@ -71,6 +77,7 @@ import main.java.breakingPointTool.versions.Versions;
 
 public class BreakingPointTool 
 {
+	public static final String BASE_DIR= "/opt";
 	private static Scanner keyboard;
 
 	public static void main(String [ ] args) throws IOException, InterruptedException, NumberFormatException, SQLException, JSONException, SAXException, ParserConfigurationException, InstantiationException, IllegalAccessException, RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException
@@ -127,7 +134,7 @@ public class BreakingPointTool
 			//path = keyboard.nextLine();	
 			System.out.println("Type 1 for new analysis or 2 for a new version analysis to existed project"); 
 			typeAnalysis = keyboard.nextInt();
-			
+
 			System.out.println("Type the Git repository URL:");
 			keyboard.nextLine(); // Consume newline left-over
 			gitUrl = keyboard.nextLine();
@@ -150,7 +157,7 @@ public class BreakingPointTool
 		// For sonarqube connection
 		String usernameSQConnection = "", passwordSQConnection = "";
 		// For sonarqube database
-		String usernameSQ = "", passwordSQ = "";
+		//String usernameSQ = "", passwordSQ = "";
 		// For results database
 		String usernameDBConnection = "", passwordDBConnection= "";
 		String sonarName = "";
@@ -161,23 +168,25 @@ public class BreakingPointTool
 		String jarLocation = new File(jarLocationUrl.toString()).getParent();
 		jarLocation = jarLocation.replace("file:", "");
 
-		System.out.println("Location of config file: " + jarLocation);
-
 		// for eclipse execution
 		int t = jarLocation.lastIndexOf("/");
 		jarLocation = jarLocation.substring(0,t);
 
 		String credentials = jarLocation + "/configurations.txt";
+		//String credentials = BreakingPointTool.BASE_DIR + "/configurations.txt";
+		
+		System.out.println("Location of config file: " + credentials);
 
-		if (new File(jarLocation + "/configurations.txt").exists()) 
+
+		if (new File(credentials).exists()) 
 		{ 
-			BufferedReader br = new BufferedReader(new FileReader(jarLocation + "/configurations.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(credentials));
 
 			while ((line = br.readLine()) != null)
 			{ 
 				if (line.contains("#")) 
 					continue;
-
+				/*
 				// SonarQube Database Credentials
 				if (line.contains("usernameSQDB:")) 
 				{ 
@@ -190,6 +199,7 @@ public class BreakingPointTool
 					String[] temp = line.split("passwordSQDB:"); 
 					passwordSQ = temp[1];
 				} 
+				*/
 
 				// Metrics Database Credentials
 				if (line.contains("username=")) 
@@ -228,11 +238,13 @@ public class BreakingPointTool
 					serverUrl = temp[1]; 
 				}
 
+				/*
 				if (line.contains("sonarName:"))
 				{
 					String[] temp = line.split("sonarName:");
 					sonarName = temp[1];
 				}
+				*/
 
 				//  Metrics DB credentials
 				if (line.contains("serverName="))
@@ -269,27 +281,29 @@ public class BreakingPointTool
 			}
 			br.close();
 			// Set Credentials to Database
-			new SonarDatabaseConnection(usernameSQ, passwordSQ, sonarName);
+			//new SonarDatabaseConnection(usernameSQ, passwordSQ, sonarName);
 			new DatabaseConnection(usernameDBConnection, passwordDBConnection, serverName + "/" +  dbName);
 			// Execute SonarQube
 			//sonarQube(exec,projectName, versionsNum, projectPath, language, serverUrl, usernameSQConnection, passwordSQConnection, typeAnalysis); 
 			// Create database tables
 			TablesCreation tables = new TablesCreation();
 			tables.createDatabaseTables();
-			
+
 			// If the project has records on DB delete them
 			if (typeAnalysis == 1) 
 				DeleteFromDBAlreadyAnalysedProject(projectName, language);
 			else
 				DeleteFromDBAlreadyAnalysedVersion(projectName,language, versionsNum-1);
-			
+
 			// Clone code from Git
 			// TODO delete it after fix
+			/*
 			if (projectName.equals("Neurasmus"))
 			{
 				String shasPath = jarLocation + "/SHAsOfVersions.txt";
+				shasPath = BreakingPointTool.BASE_DIR + "/SHAsOfVersions.txt";
 				ArrayList<String> shas = new ArrayList<String>();
-				
+
 				if (new File(shasPath).exists()) 
 				{ 
 					br = new BufferedReader(new FileReader(shasPath));
@@ -299,23 +313,23 @@ public class BreakingPointTool
 						shas.add(line);
 					}
 				}
-				
+
 				GitCloneProject git = new GitCloneProject();
-				System.out.println(gitUsername);
-				System.out.println(gitPassword);
-				System.out.println(gitUrl);
-				git.cloneCommits(gitUsername, gitPassword, shas, gitUrl, projectName, versionsNum);
 				
+				git.cloneCommits(gitUsername, gitPassword, shas, gitUrl, projectName, versionsNum);
+
 				projectPath = git.getProjectPath();
 				projectPath = projectPath.replace(projectName, "");
 			}
+			*/
 		}
 
 
 		if (language.equals("Java"))
 		{
 			// Databases call for every level		
-			DatabaseGetData dbCall = new DatabaseGetData(projectName);	
+			//DatabaseGetData dbCall = new DatabaseGetData(projectName);	
+			SonarQubeArtifacts artifacts = new SonarQubeArtifacts(serverUrl);
 
 			if (typeAnalysis == 1) {
 
@@ -336,27 +350,31 @@ public class BreakingPointTool
 					// sta  "" jarPath
 					metricsCalc.executeOneVersion(jarName, i, jarPath, projectName);
 
-					dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(i));
-					dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(i));
+					//dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(i));
+					//dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(i));
+					
+					artifacts.getArtifactsName(projectName + i, "FIL");
+					artifacts.getArtifactsName(projectName + i, "DIR");
+							
 					Versions v = new Versions();
 					v.setProjectName(projectName);
 					v.setVersionId(i);			
 
 					// Get metrics from Sonar API for every level
-					ApiCall metricsFromSonarClassLevel = new ApiCall(serverUrl);
-					metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(dbCall.getClassesId(), language);
-					metricsFromSonarClassLevel.getTDFromApiSonar(dbCall.getClassesId());
-					metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(dbCall.getClassesId());
+					SonarQubeMetrics metricsFromSonarClassLevel = new SonarQubeMetrics(serverUrl);
+					metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(artifacts.getClassesId(), language);
+					metricsFromSonarClassLevel.getTDFromApiSonar(artifacts.getClassesId());
+					metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(artifacts.getClassesId());
 
-					ApiCall metricsFromSonarPackageLevel = new ApiCall(serverUrl);
-					metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(dbCall.getPackagesId(), language);
-					metricsFromSonarPackageLevel.getTDFromApiSonar(dbCall.getPackagesId());
-					metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(dbCall.getPackagesId());
+					SonarQubeMetrics metricsFromSonarPackageLevel = new SonarQubeMetrics(serverUrl);
+					metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(artifacts.getPackagesId(), language);
+					metricsFromSonarPackageLevel.getTDFromApiSonar(artifacts.getPackagesId());
+					metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(artifacts.getPackagesId());
 
 					// Set metrics from metrics calculator at class and package level
 					AverageLocCalculation calcAverageAllLevels = new AverageLocCalculation();
 					calcAverageAllLevels.setMetricsToClassLevel(projectName, i);
-					calcAverageAllLevels.setClassToPackageLevel(dbCall.getPackagesId(),projectName, i);	
+					calcAverageAllLevels.setClassToPackageLevel(artifacts.getPackagesId(),projectName, i);	
 
 					v.setPackageInProject(calcAverageAllLevels.getObjectsPackageMetrics());
 					//artifactLongNamesPackage.clear();
@@ -368,7 +386,7 @@ public class BreakingPointTool
 						for (int l = 0; l < metricsFromSonarPackageLevel.getArtifactNames().size(); l++)
 						{
 							String pack2 = metricsFromSonarPackageLevel.getArtifactNames().get(l);
-
+							
 							if (pack2.contains(pack1))
 							{
 								v.getPackages().get(j).metricsfromSonar(metricsFromSonarPackageLevel.getNumOfClasses().get(l),
@@ -435,7 +453,7 @@ public class BreakingPointTool
 					}
 
 					projectArtifacts.setVersion(v);
-					dbCall.clearData();
+					artifacts.clearData();
 
 
 				} // End of FOR of versions
@@ -497,26 +515,29 @@ public class BreakingPointTool
 				metricsCalc.executeOneVersion(jarName, versionsNum-1, jarPath, projectName);
 
 				// Get directories and files names from SonarQube DB Last Version
-				dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(versionsNum - 1));
-				dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(versionsNum - 1));			
+				//dbCall.getDirectoriesForProject(projectName, artifacts.getProjectsKees().get(versionsNum - 1));
+				//dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(versionsNum - 1));	
+				
+				artifacts.getArtifactsName(projectName + (versionsNum - 1), "FIL");
+				artifacts.getArtifactsName(projectName + (versionsNum - 1), "DIR");
 
 				// Get metrics from Sonar API for every level - NEW VERSION
-				ApiCall metricsFromSonarClassLevel = new ApiCall(serverUrl);
-				metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(dbCall.getClassesId(), language);
-				metricsFromSonarClassLevel.getTDFromApiSonar(dbCall.getClassesId());
-				metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(dbCall.getClassesId());
+				SonarQubeMetrics metricsFromSonarClassLevel = new SonarQubeMetrics(serverUrl);
+				metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(artifacts.getClassesId(), language);
+				metricsFromSonarClassLevel.getTDFromApiSonar(artifacts.getClassesId());
+				metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(artifacts.getClassesId());
 
-				ApiCall metricsFromSonarPackageLevel = new ApiCall(serverUrl);
-				metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(dbCall.getPackagesId(), language);
-				metricsFromSonarPackageLevel.getTDFromApiSonar(dbCall.getPackagesId());
-				metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(dbCall.getPackagesId());
+				SonarQubeMetrics metricsFromSonarPackageLevel = new SonarQubeMetrics(serverUrl);
+				metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(artifacts.getPackagesId(), language);
+				metricsFromSonarPackageLevel.getTDFromApiSonar(artifacts.getPackagesId());
+				metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(artifacts.getPackagesId());
 
 				// Set metrics from metrics calculator at class and package level
 				AverageLocCalculation calcAverageAllLevels = new AverageLocCalculation();
 				// Save Metrics Calculator Class Metrics
 				calcAverageAllLevels.setMetricsToClassLevel(projectName, versionsNum-1);
 				// Save Metrics Calculator Package Metrics
-				calcAverageAllLevels.setClassToPackageLevel(dbCall.getPackagesId(),projectName, versionsNum-1);
+				calcAverageAllLevels.setClassToPackageLevel(artifacts.getPackagesId(),projectName, versionsNum-1);
 
 				Versions v = new Versions();
 				v.setProjectName(projectName);
@@ -598,7 +619,7 @@ public class BreakingPointTool
 				}
 
 				projectArtifacts.setVersion(v);
-				dbCall.clearData();
+				artifacts.clearData();
 
 				// Calculate LOC 
 				AverageLocCalculation calcLOC = new AverageLocCalculation();
@@ -665,7 +686,8 @@ public class BreakingPointTool
 		else if (language.equals("C") || language.equals("C++"))
 		{
 			// Databases call for every level		
-			DatabaseGetData dbCall = new DatabaseGetData(projectName);	
+			SonarQubeArtifacts artifacts = new SonarQubeArtifacts(serverUrl);
+			
 			if (typeAnalysis == 1) 
 			{
 				DatabaseSaveData dbSave = new DatabaseSaveData();
@@ -676,27 +698,32 @@ public class BreakingPointTool
 
 				for (int i = 0; i < versionsNum; i ++)
 				{
+					//String p = "/opt/" + projectName + "/"+ projectName + i;
+					//TODO 
+					// TODO
 					String p = projectPath + File.separator + projectName + File.separator + projectName + i;
 
-					dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(i));
-					dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(i));
+
+					artifacts.getArtifactsName(projectName + i, "FIL");
+					artifacts.getArtifactsName(projectName + i, "DIR");
+					
 					Versions v = new Versions();
 					v.setProjectName(projectName);
 					v.setVersionId(i);	
 
 					// Get metrics from Sonar API for every level
-					ApiCall metricsFromSonarClassLevel = new ApiCall(serverUrl);
+					SonarQubeMetrics metricsFromSonarClassLevel = new SonarQubeMetrics(serverUrl);
 
-					metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(dbCall.getClassesId(), language);
-					metricsFromSonarClassLevel.getTDFromApiSonar(dbCall.getClassesId());
-					metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(dbCall.getClassesId());
+					metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(artifacts.getClassesId(), language);
+					metricsFromSonarClassLevel.getTDFromApiSonar(artifacts.getClassesId());
+					metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(artifacts.getClassesId());
 
-					ApiCall metricsFromSonarPackageLevel = new ApiCall(serverUrl);
-					metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(dbCall.getPackagesId(), language);
-					metricsFromSonarPackageLevel.getTDFromApiSonar(dbCall.getPackagesId());
-					metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(dbCall.getPackagesId());
+					SonarQubeMetrics metricsFromSonarPackageLevel = new SonarQubeMetrics(serverUrl);
+					metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(artifacts.getPackagesId(), language);
+					metricsFromSonarPackageLevel.getTDFromApiSonar(artifacts.getPackagesId());
+					metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(artifacts.getPackagesId());
 
-					for (String pc : dbCall.getPackagesId())
+					for (String pc : artifacts.getPackagesId())
 					{
 						if (pc.contains("test"))
 							continue;
@@ -719,7 +746,7 @@ public class BreakingPointTool
 					artifactLongNamesPackage.clear();
 
 					projectArtifacts.setVersion(v);
-					dbCall.clearData();
+					artifacts.clearData();
 
 
 				} 
@@ -765,6 +792,8 @@ public class BreakingPointTool
 				DatabaseSaveData dbSave = new DatabaseSaveData();
 				dbSave.saveTimestamp(projectName, versionsNum - 1);
 
+				//String p = "/opt/" + projectName + "/"+ projectName + (versionsNum - 1);
+
 				String p = projectPath + File.separator + projectName + File.separator + projectName + (versionsNum - 1);
 
 				// Get metrics from Database from previous version
@@ -776,26 +805,26 @@ public class BreakingPointTool
 				packageMetrics.getAnalysisDataC(projectName, "DIR", versionsNum - 2);
 				packageMetrics.getAnalysisDataBPTC(projectName, "DIR", versionsNum - 2);
 
-				dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(versionsNum - 1));
-				dbCall.getClassesForProject(projectName, dbCall.getProjectsKees().get(versionsNum - 1));
+				artifacts.getArtifactsName(projectName + (versionsNum - 1), "FIL");
+				artifacts.getArtifactsName(projectName + (versionsNum - 1), "DIR");
 
 				Versions v = new Versions();
 				v.setProjectName(projectName);
 				v.setVersionId(versionsNum-1);	
 
 				// Get metrics from Sonar API for every level
-				ApiCall metricsFromSonarClassLevel = new ApiCall(serverUrl);
+				SonarQubeMetrics metricsFromSonarClassLevel = new SonarQubeMetrics(serverUrl);
 
-				metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(dbCall.getClassesId(), language);
-				metricsFromSonarClassLevel.getTDFromApiSonar(dbCall.getClassesId());
-				metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(dbCall.getClassesId());
+				metricsFromSonarClassLevel.getMetricsFromApiSonarClassLevel(artifacts.getClassesId(), language);
+				metricsFromSonarClassLevel.getTDFromApiSonar(artifacts.getClassesId());
+				metricsFromSonarClassLevel.getMetricCommentsDensityFromApi(artifacts.getClassesId());
 
-				ApiCall metricsFromSonarPackageLevel = new ApiCall(serverUrl);
-				metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(dbCall.getPackagesId(), language);
-				metricsFromSonarPackageLevel.getTDFromApiSonar(dbCall.getPackagesId());
-				metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(dbCall.getPackagesId());
+				SonarQubeMetrics metricsFromSonarPackageLevel = new SonarQubeMetrics(serverUrl);
+				metricsFromSonarPackageLevel.getMetricsFromSonarPackageLevel(artifacts.getPackagesId(), language);
+				metricsFromSonarPackageLevel.getTDFromApiSonar(artifacts.getPackagesId());
+				metricsFromSonarPackageLevel.getMetricCommentsDensityFromApi(artifacts.getPackagesId());
 
-				for (String pc : dbCall.getPackagesId())
+				for (String pc : artifacts.getPackagesId())
 				{
 					if (pc.contains("test"))
 						continue;
@@ -818,7 +847,7 @@ public class BreakingPointTool
 				artifactLongNamesPackage.clear();
 
 				projectArtifacts.setVersion(v);
-				dbCall.clearData();
+				artifacts.clearData();
 
 				// Calculate LOC
 
@@ -941,9 +970,9 @@ public class BreakingPointTool
 			// Default : http://localhost:9000
 			printWriter.println ("# Server Configuration");
 			printWriter.println ("sonar.host.url=" + serverUrl); 
-			printWriter.println ("sonar.login=" + username);
+			//printWriter.println ("sonar.login=" + username);
 			// Password is blank if token is used
-			printWriter.println ("sonar.password=" + password);
+			//printWriter.println ("sonar.password=" + password);
 			printWriter.close ();
 
 			// Execute SonarQube
@@ -1012,7 +1041,7 @@ public class BreakingPointTool
 		System.out.println("Deletion successful."); 
 	}
 
-	
+
 	// Delete source codes cloned from github
 	public static void deleteSourceCode(File file) throws IOException {
 		boolean result = true;
@@ -1080,7 +1109,7 @@ public class BreakingPointTool
 		PreparedStatement pstm = null;
 		ResultSet resultSet = null;
 		String query;
-		
+
 		query = "SELECT * FROM principalMetrics WHERE project_name = (?) ";
 		try 
 		{
@@ -1092,7 +1121,7 @@ public class BreakingPointTool
 			if(resultSet.next())
 			{
 				//TODO delete from principal, cMetrics or javaMetrics
-				
+
 				//Delete Principal Metrics
 				query = "DELETE FROM principalMetrics WHERE project_name = (?) ";
 				try 
@@ -1111,7 +1140,7 @@ public class BreakingPointTool
 					.println("An exception occured while deleting data from database. Exception is :: "
 							+ e);
 				}
-				
+
 				String table = "";
 				if (language.equals("Java"))
 				{
@@ -1121,7 +1150,7 @@ public class BreakingPointTool
 				{
 					table = "cMetrics";
 				}
-				
+
 				//Delete Interest Metrics
 				query = "DELETE FROM " + table + " WHERE project_name = (?) ";
 				try 
@@ -1167,7 +1196,7 @@ public class BreakingPointTool
 			}
 		}
 	}
-	
+
 	//TODO check for phase 2 if this versions is analysed, if it is, deleted first
 	public static void DeleteFromDBAlreadyAnalysedVersion(String projectName, String language, int version)
 	{
@@ -1175,7 +1204,7 @@ public class BreakingPointTool
 		PreparedStatement pstm = null;
 		ResultSet resultSet = null;
 		String query;
-		
+
 		query = "SELECT * FROM principalMetrics WHERE project_name = (?) and version = (?)";
 		try 
 		{
@@ -1188,7 +1217,7 @@ public class BreakingPointTool
 			if(resultSet.next())
 			{
 				//TODO delete from principal, cMetrics or javaMetrics
-				
+
 				//Delete Principal Metrics
 				query = "DELETE FROM principalMetrics WHERE project_name = (?) and version = (?)";
 				try 
@@ -1208,7 +1237,7 @@ public class BreakingPointTool
 					.println("An exception occured while deleting data from database. Exception is :: "
 							+ e);
 				}
-				
+
 				String table = "";
 				if (language.equals("Java"))
 				{
@@ -1218,7 +1247,7 @@ public class BreakingPointTool
 				{
 					table = "cMetrics";
 				}
-				
+
 				//Delete Interest Metrics
 				query = "DELETE FROM " + table + " WHERE project_name = (?) and version = (?)";
 				try 
@@ -1265,5 +1294,5 @@ public class BreakingPointTool
 			}
 		}
 	}
-	
+
 }
