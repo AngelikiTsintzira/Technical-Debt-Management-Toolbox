@@ -142,27 +142,7 @@ public class SonarQubeMetrics {
 						findIssue(metric, Double.parseDouble(value));
 					}
 					
-					if (array.length() < 9)
-					{
-						if (this.classes.size() < this.artifactNames.size())
-							setNumofClasses(0.0);
-						if (this.complexity.size() < this.artifactNames.size())
-							setComplexity(0.0);
-						if (this.statements.size() < this.artifactNames.size())
-							setStatements(0.0);
-						if (this.functions.size() < this.artifactNames.size())
-							setFunctions(0.0);
-						if(this.ncloc.size() < this.artifactNames.size())
-							setncloc(0.0);
-						if(this.codeSmells.size() < this.artifactNames.size())
-							setCodeSmells(0.0);
-						if(this.bugs.size() < this.artifactNames.size())
-							setBugs(0.0);
-						if (this.vulnerabilities.size() < this.artifactNames.size())
-							setVulnerabilities(0.0);
-						if(this.duplicated_lines_density.size() < this.artifactNames.size())
-							setDuplicationsDensity(0.0);
-					}
+					checkSizes(array);
 
 
 				} // end of while
@@ -231,27 +211,7 @@ public class SonarQubeMetrics {
 						findIssue(metric, Double.parseDouble(value));
 					}
 
-					if (array.length() < 9)
-					{
-						if (this.classes.size() < this.artifactNames.size())
-							setNumofClasses(0.0);
-						if (this.complexity.size() < this.artifactNames.size())
-							setComplexity(0.0);
-						if (this.statements.size() < this.artifactNames.size())
-							setStatements(0.0);
-						if (this.functions.size() < this.artifactNames.size())
-							setFunctions(0.0);
-						if(this.ncloc.size() < this.artifactNames.size())
-							setncloc(0.0);
-						if(this.codeSmells.size() < this.artifactNames.size())
-							setCodeSmells(0.0);
-						if(this.bugs.size() < this.artifactNames.size())
-							setBugs(0.0);
-						if (this.vulnerabilities.size() < this.artifactNames.size())
-							setVulnerabilities(0.0);
-						if(this.duplicated_lines_density.size() < this.artifactNames.size())
-							setDuplicationsDensity(0.0);
-					}
+					checkSizes(array);
 				}
 
 				httpClient.close();
@@ -437,5 +397,30 @@ public class SonarQubeMetrics {
 			setVulnerabilities(value);
 		else if (metricName.equals("duplicated_lines_density"))
 			setDuplicationsDensity(value);
+	}
+	
+	public void checkSizes(JSONArray array)
+	{
+		if (array.length() < 9)
+		{
+			if (this.classes.size() < this.artifactNames.size())
+				setNumofClasses(0.0);
+			if (this.complexity.size() < this.artifactNames.size())
+				setComplexity(0.0);
+			if (this.statements.size() < this.artifactNames.size())
+				setStatements(0.0);
+			if (this.functions.size() < this.artifactNames.size())
+				setFunctions(0.0);
+			if(this.ncloc.size() < this.artifactNames.size())
+				setncloc(0.0);
+			if(this.codeSmells.size() < this.artifactNames.size())
+				setCodeSmells(0.0);
+			if(this.bugs.size() < this.artifactNames.size())
+				setBugs(0.0);
+			if (this.vulnerabilities.size() < this.artifactNames.size())
+				setVulnerabilities(0.0);
+			if(this.duplicated_lines_density.size() < this.artifactNames.size())
+				setDuplicationsDensity(0.0);
+		}
 	}
 }
