@@ -1,6 +1,7 @@
 package main.java.breakingPointTool.GitClone;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.CheckoutConflictException;
@@ -10,33 +11,35 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import main.java.breakingPointTool.main.BreakingPointTool;
+import main.java.breakingPointTool.deletePreAnalysedData.deletePreAnalysedData;
 
 // Clone Project from Git
 public class GitCloneProject 
 {
 	private String cloneProjectPath;
-	
+
 	public GitCloneProject()
 	{
 		this.cloneProjectPath = null;
 	}
-	
+
 	public String getProjectPath()
 	{
 		return this.cloneProjectPath;
 	}
-	
+
 	// Clone Git Projects with and without credentials
-	public void cloneCommits(String username, String password, ArrayList<String> sha, String git, String projectName, int version) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException
+	public void cloneCommits(String jarLocation, String username, String password, ArrayList<String> sha, String git, String projectName, int version) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException, IOException
 	{
-		String javaRunningDirectory = System.getProperty("user.dir");
-		//this.cloneProjectPath = javaRunningDirectory + "/Projects/" + projectName;
-		
-		this.cloneProjectPath = BreakingPointTool.BASE_DIR + "/Projects/" + projectName;
-		
+		this.cloneProjectPath = jarLocation + "/Projects/" + projectName;
+
 		int ver = 0;
-	
+
+		// Delete files from previous analysis thta left by mistake
+		deletePreAnalysedData del = new deletePreAnalysedData();
+		File directory = new File(this.cloneProjectPath);
+		del.deleteSourceCode(directory);
+
 		// Public repository, no need for authorization
 		if (password.length() < 2)
 		{
@@ -52,11 +55,12 @@ public class GitCloneProject
 						.call()) {
 					System.out.println("Having repository: " + result.getRepository().getDirectory());
 				}
+
 			}
 		}
 		//Private repository, need of authorization
 		else
-		{
+		{	
 			for (int i = 0; i < sha.size(); i++)
 			{
 				ver = i;
@@ -76,5 +80,5 @@ public class GitCloneProject
 			}
 		}
 	}
-	
+
 }

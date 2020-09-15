@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import main.java.breakingPointTool.main.BreakingPointTool;
-
 public class SemiCalculator 
 {
-	private final String semi = "externalTools/metrics_calculator_noOop.jar";
+	private final String semi = "metrics_calculator_noOop.jar";
 	//private final String semi = BreakingPointTool.BASE_DIR + "/metrics_calculator_noOop.jar";
 
 	public void executeSemiCalculator(String language, int version, String path, String projectName, String credentials) throws IOException, InterruptedException

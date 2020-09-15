@@ -261,7 +261,15 @@ public class FindSimilarArtifacts
 			+ "\n" + similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 5).getPackageName()
 			+ " with similarity: " + similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-5)
 			+ "\n");*/
-				
+			
+			
+			for (int k = 1; k < similarPackages.get(i).getOtherPackages().size() + 1; k++)
+			{
+				similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - k));
+				similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-k));
+			}
+			
+			/*	
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 1));
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 2));
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 3));
@@ -273,6 +281,7 @@ public class FindSimilarArtifacts
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-3));
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-4));
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-5));			
+			*/
 		}	
 	}
 	

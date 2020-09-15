@@ -88,12 +88,12 @@ public class DatabaseSaveData
 		}	
 	}
 
-	public void saveBreakingPointInDatabase(String className, int versionNum, double breakingPoint, double principal, double interest, double k, double rate) throws SQLException
+	public void saveBreakingPointInDatabase(String className, int versionNum, double breakingPoint, double principal, double interest, double k, double rate, String projectName) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
 
-		String query = "UPDATE javaMetrics SET principal = ? , interest = ? , breakingpoint = ? , frequency_of_change = ?, interest_probability = ?  WHERE class_name = ? AND version = ? ;";
+		String query = "UPDATE javaMetrics SET principal = ? , interest = ? , breakingpoint = ? , frequency_of_change = ?, interest_probability = ?  WHERE class_name = ? AND version = ? and project_name = ? ;";
 		try 
 		{
 			pstm = conn.prepareStatement(query);
@@ -104,6 +104,7 @@ public class DatabaseSaveData
 			pstm.setFloat(5, (float) rate);
 			pstm.setString(6, className);
 			pstm.setDouble(7, versionNum);
+			pstm.setString(8, projectName);
 			pstm.executeUpdate();
 
 		} catch (SQLException ex) {
@@ -189,18 +190,19 @@ public class DatabaseSaveData
 		}
 	}
 
-	public void updatePrincipal(String className, int versionNum, double principal) throws SQLException
+	public void updatePrincipal(String className, int versionNum, double principal, String projectName) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
 
-		String query = "UPDATE principalMetrics SET principal = ? WHERE class_name = ? AND version = ? ;";
+		String query = "UPDATE principalMetrics SET principal = ? WHERE class_name = ? AND version = ? and project_name = ?;";
 		try 
 		{
 			pstm = conn.prepareStatement(query);
 			pstm.setDouble(1, principal);
 			pstm.setString(2, className);
 			pstm.setDouble(3, versionNum);
+			pstm.setString(4, projectName);
 			pstm.executeUpdate();
 
 		} catch (SQLException ex) {

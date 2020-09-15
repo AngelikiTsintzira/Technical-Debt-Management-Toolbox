@@ -62,6 +62,10 @@ public class SonarQubeArtifacts
 					String value = array.getJSONObject(i).getString("key");
 					if (value.equals("xml"))
 						continue;
+					
+					if (value.contains("test/"))
+						continue;
+					
 					if (artifactType.equals(("FIL")))
  					{
 						this.classesIDs.add(value);

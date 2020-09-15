@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import main.java.breakingPointTool.connection.DatabaseConnection;
-import main.java.breakingPointTool.connection.SonarDatabaseConnection;
 
 public class DatabaseGetData 
 {
@@ -26,7 +25,6 @@ public class DatabaseGetData
 		this.packagesIDs = new ArrayList<String>();
 		this.projectsIDs = new ArrayList<String>();
 		this.projectsNames = new ArrayList<String>();
-		getKeeForProject(projectName);
 	}
 
 	public DatabaseGetData()
@@ -36,11 +34,6 @@ public class DatabaseGetData
 		this.packagesIDs = new ArrayList<String>();
 		this.projectsIDs = new ArrayList<String>();
 		this.projectsNames = new ArrayList<String>();
-	}
-
-	public void DatabaseForPackages(String projectName) throws InstantiationException, IllegalAccessException 
-	{
-		getDirectoriesForProject(projectName, kee);	
 	}
 
 	public void DatabaseForProjects() throws InstantiationException, IllegalAccessException
@@ -107,7 +100,7 @@ public class DatabaseGetData
 		return cc;
 	}
 
-
+	/*
 	public void getKeeForProject(String projectName) throws InstantiationException, IllegalAccessException
 	{
 		Connection conn = SonarDatabaseConnection.getConnection();
@@ -146,17 +139,11 @@ public class DatabaseGetData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
+			
 		}
 		System.out.println("Kee from project " + projectName+ " retrieved from database successfully!");
 	}
+
 
 	public void getClassesForProject(String projectName, String kee) throws InstantiationException, IllegalAccessException
 	{
@@ -198,13 +185,7 @@ public class DatabaseGetData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);				}
-			}*/
+
 		}
 		System.out.println("Classes from project " + projectName + " retrieved from database successfully!");		
 	}
@@ -249,17 +230,11 @@ public class DatabaseGetData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
+
 		}
 		System.out.println("Directories from project " + projectName + " retrieved from database successfully!");	
 	}
+	*/
 /*
 	public void  getAllProjects() throws InstantiationException, IllegalAccessException
 	{

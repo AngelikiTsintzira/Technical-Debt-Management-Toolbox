@@ -1,6 +1,7 @@
 package main.java.breakingPointTool.calculations;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -32,11 +33,13 @@ public class AverageLocCalculation
 		//System.out.println("Version: " + i);
 		while ((line = br.readLine()) != null) 
 		{
+			
 			if (line.contains(".")) 
 			{
 				if (!line.contains("test") && !line.contains("Test")) 
 				{
-					String[] parts = line.split(",");
+
+					String[] parts = line.split(";");
 					String className = parts[0].replaceAll("\\.", "/");
 
 					double wmc = Double.parseDouble(parts[1]);
@@ -83,6 +86,9 @@ public class AverageLocCalculation
 						list = ChangeProneness.get(className);
 					}
 					
+					if (className.equals("parsers.cParserSemiLatest"))
+						System.out.println("From output.csv class name: " + className + " in version " + versionNum);
+					
 					DatabaseSaveData saveInDataBase = new DatabaseSaveData();
 					saveInDataBase.saveMetricsInDatabase(projectName, versionNum, className, scope, wmc, dit, cbo, rfc, lcom, wmc_dec, nocc, mpc, dac, size1, size2,
 							dsc, noh, ana, dam, dcc, camc, moa, mfa, nop, cis, nom, Reusability, Flexibility, Understandability, Functionality, Extendibility, Effectiveness, FanIn,list.get(0), list.get(1));
@@ -105,22 +111,27 @@ public class AverageLocCalculation
 		String line;
 		//"rem_and_cpm_metrics_classLevel.csv"
 		// read specific version file
-		br = new BufferedReader(new FileReader(fileName));	
-		while ((line = br.readLine()) != null) 
-		{
-			if (line.contains(".")) 
-			{				
-				if (!line.contains("test") && !line.contains("Test")) 
-				{
-					String[] parts = line.split(",");
-					String className = parts[0].replaceAll("\\.", "/");
-					
-					double rem = Double.parseDouble(parts[1]);
-					double cpm = Double.parseDouble(parts[2]);
-					ArrayList<Double> list = new ArrayList<Double>();
-					list.add(rem);
-					list.add(cpm);
-					ChangeProneness.put(className, list);	
+		File f = new File(fileName);
+
+		if(f.exists()) 
+		{ 
+			br = new BufferedReader(new FileReader(fileName));	
+			while ((line = br.readLine()) != null) 
+			{
+				if (line.contains(".")) 
+				{				
+					if (!line.contains("test") && !line.contains("Test")) 
+					{
+						String[] parts = line.split(",");
+						String className = parts[0].replaceAll("\\.", "/");
+						
+						double rem = Double.parseDouble(parts[1]);
+						double cpm = Double.parseDouble(parts[2]);
+						ArrayList<Double> list = new ArrayList<Double>();
+						list.add(rem);
+						list.add(cpm);
+						ChangeProneness.put(className, list);	
+					}
 				}
 			}
 		}
@@ -178,14 +189,18 @@ public class AverageLocCalculation
 
 			for (int i = 0; i < p.getVersions().size(); i++)
 			{
-				//System.out.println("Version: " +  i);
+				System.out.println("Version: " +  i);
+				System.out.println("Class current: " + currentClass);
+
 				int flag = 0;
 				int packId = 0;
 				int classId = 0;
 				for (int j = 0; j < p.getVersions().get(i).getPackages().size(); j++)
-				{				
+				{	
+					System.out.println("Classes: "+ p.getVersions().get(i).getPackages().get(j).getPackageName());
+
 					for (int z = 0; z < p.getVersions().get(i).getPackages().get(j).getClassInProject().size(); z++)
-					{					
+					{		
 						if (currentClass.equals(p.getVersions().get(i).getPackages().get(j).getClassInProject().get(z).getClassName())) 
 						{
 							sizes.add(p.getVersions().get(i).getPackages().get(j).getClassInProject().get(z).getSize1());
@@ -199,7 +214,14 @@ public class AverageLocCalculation
 						packId = j;
 						break;		
 					}
+
 				}
+				
+				//if (flag == 0)
+					//continue;
+				
+				
+				System.out.println("Flag: " + flag);
 				double x = 0;
 				int aboveZero = 0;
 
@@ -283,6 +305,7 @@ public class AverageLocCalculation
 
 				if (!Double.isNaN(x/aboveZero))
 				{
+					System.out.println(currentPackage);
 					if (currentPackage.equals(p.getVersions().get(i).getPackages().get(packId).getPackageName()))
 					{
 						p.getVersions().get(i).getPackages().get(packId).setAverageLocChange(x/aboveZero);
@@ -314,14 +337,15 @@ public class AverageLocCalculation
 			for (int j = 0; j < this.classMetrics.size(); j++)
 			{
 				int index = this.classMetrics.get(j).getClassName().lastIndexOf("/");
+				
 				if (index >= 0)
 				{
 					String packNameOfClass = this.classMetrics.get(j).getClassName().substring(0,index);
 					
-
 					// apo equals egine contains
 					if (packName.contains(packNameOfClass))
 					{
+					
 						int first = packName.indexOf(packNameOfClass);
 						int len = packNameOfClass.length();
 						
@@ -330,9 +354,7 @@ public class AverageLocCalculation
 						
 						this.packageMetrics.get(i).setClassInPackage(this.classMetrics.get(j));
 						this.packageMetrics.get(i).setPackageName(packNameOfClass);
-						//System.out.println("Package class: " + packNameOfClass);
-						//System.out.println("package: " + packName);
-						//System.out.println("New package name: " + this.packageMetrics.get(i).getPackageName());
+					
 						
 						ArrayList<Double> list = new ArrayList<Double>();
 						//list = ChangePronenessPackage.get(packName);
