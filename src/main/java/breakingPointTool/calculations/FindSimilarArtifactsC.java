@@ -1,10 +1,10 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
-import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
+import main.java.breakingPointTool.artifact.FileMetricsC;
+import main.java.breakingPointTool.artifact.PackageMetricsC;
+import main.java.breakingPointTool.artifact.ProjectArtifact;
 
 public class FindSimilarArtifactsC 
 {

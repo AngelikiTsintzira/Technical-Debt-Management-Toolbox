@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.api;
+package main.java.breakingPointTool.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;

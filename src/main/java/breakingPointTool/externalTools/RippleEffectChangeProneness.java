@@ -1,4 +1,4 @@
-  package eu.sdk4ed.uom.td.analysis.externalTools;
+package main.java.breakingPointTool.externalTools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class RippleEffectChangeProneness 
 {
-	private static String interest_probability = "interest_probabilityNoGUI.jar";
+	private static String interest_probability = "externalTools/interest_probabilityNoGUI.jar";
 
 	public void ExtractJar(String jarName, int version, String path, String projectName)
 			throws IOException, InterruptedException {
@@ -19,8 +19,7 @@ public class RippleEffectChangeProneness
 
 		// Run On Docker, eclipse ide and as jar file
 		//path = javaRunningDirectory + File.separator + projectName + File.separator + jarName + version + ".jar";
-		//path = path + File.separator + projectName + File.separator + jarName + version + ".jar";
-		path = path + jarName + version + ".jar";
+		path = path + File.separator + projectName + File.separator + jarName + version + ".jar";
 
 		System.out.println(path);
 		// Check if jar file exists

@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.connection;
+package main.java.breakingPointTool.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

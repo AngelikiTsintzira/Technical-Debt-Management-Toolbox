@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.api;
+package main.java.breakingPointTool.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -64,10 +64,6 @@ public class SonarQubeArtifacts
 					String value = array.getJSONObject(i).getString("key");
 					if (value.equals("xml"))
 						continue;
-					
-					if (value.contains("test/"))
-						continue;
-					
 					if (artifactType.equals(("FIL")))
  					{
 						this.classesIDs.add(value);

@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.preperation;
+package main.java.breakingPointTool.preperation;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
+import main.java.breakingPointTool.connection.DatabaseConnection;
 
 public class deletePreAnalysedData 
 {

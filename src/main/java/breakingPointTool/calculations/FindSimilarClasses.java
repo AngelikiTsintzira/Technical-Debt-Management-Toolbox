@@ -1,8 +1,8 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
+import main.java.breakingPointTool.artifact.ClassMetrics;
 
 
 public class FindSimilarClasses 

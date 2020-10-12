@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.database;
+package main.java.breakingPointTool.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
+import main.java.breakingPointTool.connection.DatabaseConnection;
 
 // Check if tables are created, if not, create them. You should have the database
 public class TablesCreation 

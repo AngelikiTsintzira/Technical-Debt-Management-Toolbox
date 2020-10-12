@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

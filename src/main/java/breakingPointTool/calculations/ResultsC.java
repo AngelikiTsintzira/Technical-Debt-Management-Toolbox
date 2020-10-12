@@ -1,12 +1,12 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
-import eu.sdk4ed.uom.td.analysis.database.DatabaseGetData;
-import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveDataC;
+import main.java.breakingPointTool.artifact.FileMetricsC;
+import main.java.breakingPointTool.artifact.PackageMetricsC;
+import main.java.breakingPointTool.database.DatabaseGetData;
+import main.java.breakingPointTool.database.DatabaseSaveDataC;
 
 public class ResultsC 
 {

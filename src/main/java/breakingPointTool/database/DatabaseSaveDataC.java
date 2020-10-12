@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.database;
+package main.java.breakingPointTool.database;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
+import main.java.breakingPointTool.connection.DatabaseConnection;
 
 public class DatabaseSaveDataC 
 {

@@ -1,18 +1,17 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
-import eu.sdk4ed.uom.td.analysis.database.DatabaseGetData;
-import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveData;
+import main.java.breakingPointTool.artifact.ClassMetrics;
+import main.java.breakingPointTool.artifact.PackageMetrics;
+import main.java.breakingPointTool.artifact.ProjectArtifact;
+import main.java.breakingPointTool.database.DatabaseGetData;
+import main.java.breakingPointTool.database.DatabaseSaveData;
 
 
 public class AverageLocCalculation 
@@ -37,8 +36,7 @@ public class AverageLocCalculation
 			{
 				if (!line.contains("test") && !line.contains("Test")) 
 				{
-
-					String[] parts = line.split(";");
+					String[] parts = line.split(",");
 					String className = parts[0].replaceAll("\\.", "/");
 
 					double wmc = Double.parseDouble(parts[1]);
@@ -84,8 +82,12 @@ public class AverageLocCalculation
 					{
 						list = ChangeProneness.get(className);
 					}
+<<<<<<< HEAD
 
 
+=======
+					
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 					DatabaseSaveData saveInDataBase = new DatabaseSaveData();
 					saveInDataBase.saveMetricsInDatabase(projectName, versionNum, className, scope, wmc, dit, cbo, rfc, lcom, wmc_dec, nocc, mpc, dac, size1, size2,
 							dsc, noh, ana, dam, dcc, camc, moa, mfa, nop, cis, nom, Reusability, Flexibility, Understandability, Functionality, Extendibility, Effectiveness, FanIn,list.get(0), list.get(1));
@@ -107,6 +109,7 @@ public class AverageLocCalculation
 		String line;
 		//"rem_and_cpm_metrics_classLevel.csv"
 		// read specific version file
+<<<<<<< HEAD
 		File f = new File(fileName);
 
 		if(f.exists()) 
@@ -128,6 +131,24 @@ public class AverageLocCalculation
 						list.add(cpm);
 						ChangeProneness.put(className, list);	
 					}
+=======
+		br = new BufferedReader(new FileReader(fileName));	
+		while ((line = br.readLine()) != null) 
+		{
+			if (line.contains(".")) 
+			{				
+				if (!line.contains("test") && !line.contains("Test")) 
+				{
+					String[] parts = line.split(",");
+					String className = parts[0].replaceAll("\\.", "/");
+					
+					double rem = Double.parseDouble(parts[1]);
+					double cpm = Double.parseDouble(parts[2]);
+					ArrayList<Double> list = new ArrayList<Double>();
+					list.add(rem);
+					list.add(cpm);
+					ChangeProneness.put(className, list);	
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 				}
 			}
 		}
@@ -185,18 +206,14 @@ public class AverageLocCalculation
 
 			for (int i = 0; i < p.getVersions().size(); i++)
 			{
-				System.out.println("Version: " +  i);
-				System.out.println("Class current: " + currentClass);
-
+				//System.out.println("Version: " +  i);
 				int flag = 0;
 				int packId = 0;
 				int classId = 0;
 				for (int j = 0; j < p.getVersions().get(i).getPackages().size(); j++)
-				{	
-					System.out.println("Classes: "+ p.getVersions().get(i).getPackages().get(j).getPackageName());
-
+				{				
 					for (int z = 0; z < p.getVersions().get(i).getPackages().get(j).getClassInProject().size(); z++)
-					{		
+					{					
 						if (currentClass.equals(p.getVersions().get(i).getPackages().get(j).getClassInProject().get(z).getClassName())) 
 						{
 							sizes.add(p.getVersions().get(i).getPackages().get(j).getClassInProject().get(z).getSize1());
@@ -210,14 +227,16 @@ public class AverageLocCalculation
 						packId = j;
 						break;		
 					}
-
 				}
+<<<<<<< HEAD
 
 				//if (flag == 0)
 				//continue;
 
 
 				System.out.println("Flag: " + flag);
+=======
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 				double x = 0;
 				int aboveZero = 0;
 
@@ -301,7 +320,6 @@ public class AverageLocCalculation
 
 				if (!Double.isNaN(x/aboveZero))
 				{
-					System.out.println(currentPackage);
 					if (currentPackage.equals(p.getVersions().get(i).getPackages().get(packId).getPackageName()))
 					{
 						p.getVersions().get(i).getPackages().get(packId).setAverageLocChange(x/aboveZero);
@@ -333,15 +351,25 @@ public class AverageLocCalculation
 			for (int j = 0; j < this.classMetrics.size(); j++)
 			{
 				int index = this.classMetrics.get(j).getClassName().lastIndexOf("/");
+<<<<<<< HEAD
 
 				if (index >= 0)
 				{
 					String packNameOfClass = this.classMetrics.get(j).getClassName().substring(0,index);
+=======
+				if (index >= 0)
+				{
+					String packNameOfClass = this.classMetrics.get(j).getClassName().substring(0,index);
+					
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 
 					// apo equals egine contains
 					if (packName.contains(packNameOfClass))
 					{
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 						int first = packName.indexOf(packNameOfClass);
 						int len = packNameOfClass.length();
 
@@ -351,8 +379,15 @@ public class AverageLocCalculation
 						System.out.println("Class " + this.classMetrics.get(j) + " assigned to package " + packName);
 						this.packageMetrics.get(i).setClassInPackage(this.classMetrics.get(j));
 						this.packageMetrics.get(i).setPackageName(packNameOfClass);
+<<<<<<< HEAD
 
 
+=======
+						//System.out.println("Package class: " + packNameOfClass);
+						//System.out.println("package: " + packName);
+						//System.out.println("New package name: " + this.packageMetrics.get(i).getPackageName());
+						
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 						ArrayList<Double> list = new ArrayList<Double>();
 						//list = ChangePronenessPackage.get(packName);
 

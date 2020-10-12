@@ -1,10 +1,10 @@
-package eu.sdk4ed.uom.td.analysis.artifact;
+package main.java.breakingPointTool.artifact;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveDataC;
+import main.java.breakingPointTool.database.DatabaseSaveDataC;
 
 public class PackageMetricsC 
 {

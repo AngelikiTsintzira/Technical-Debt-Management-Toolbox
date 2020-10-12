@@ -8,10 +8,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -37,13 +47,12 @@ import main.java.breakingPointTool.calculations.OptimalArtifactC;
 import main.java.breakingPointTool.calculations.Results;
 import main.java.breakingPointTool.calculations.ResultsC;
 import main.java.breakingPointTool.connection.DatabaseConnection;
+import main.java.breakingPointTool.connection.SonarDatabaseConnection;
 import main.java.breakingPointTool.database.DatabaseSaveData;
 import main.java.breakingPointTool.database.GetAnalysisDataJava;
 import main.java.breakingPointTool.database.TablesCreation;
-import main.java.breakingPointTool.deletePreAnalysedData.deletePreAnalysedData;
 import main.java.breakingPointTool.externalTools.MetricsCalculator;
 import main.java.breakingPointTool.externalTools.RippleEffectChangeProneness;
-import main.java.breakingPointTool.externalTools.sonarqube;
 import main.java.breakingPointTool.versions.Versions;
 
 /* This tool is called Breaking Point Tool and calculates quality metrics for Java, C++ and C
@@ -68,7 +77,7 @@ import main.java.breakingPointTool.versions.Versions;
 
 public class BreakingPointTool 
 {
-	//public static final String BASE_DIR= "/opt";
+	public static final String BASE_DIR= "/opt";
 	private static Scanner keyboard;
 
 	public static void main(String [ ] args) throws IOException, InterruptedException, NumberFormatException, SQLException, JSONException, SAXException, ParserConfigurationException, InstantiationException, IllegalAccessException, RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException
@@ -78,7 +87,6 @@ public class BreakingPointTool
 		int versionsNum = 0;
 		int typeAnalysis = 0;
 		String gitUsername = null, gitPassword = null, gitUrl = null;
-		String shas = null;
 
 		ArrayList <String> artifactLongNamesPackage = new ArrayList<>();
 
@@ -105,7 +113,6 @@ public class BreakingPointTool
 				gitUrl = args[4];
 				gitUsername = args[5];
 				gitPassword = args[6];
-				shas = args[7];
 			}
 			catch (ArrayIndexOutOfBoundsException e){
 				System.out.println("Error: You should pass 7 parameters! \n 1) Project Name \n 2) Language \n 3) Num of Versions "
@@ -138,8 +145,6 @@ public class BreakingPointTool
 			gitUsername = keyboard.nextLine();
 			System.out.println("Type the Git Account Password:");
 			gitPassword = keyboard.nextLine();
-			System.out.println("Type SHAs of version seperate them with comma:");
-			shas = keyboard.nextLine();
 		}
 
 		// Passing parameters through stream 
@@ -152,11 +157,79 @@ public class BreakingPointTool
 		// Configuration File, get all data from file and make the jar works in every machine
 		String projectPath = "";
 		String jarPath = "";
+<<<<<<< HEAD
+=======
+		String serverUrl = "";
+		// For sonarqube connection
+		String usernameSQConnection = "", passwordSQConnection = "";
+		// For sonarqube database
+		//String usernameSQ = "", passwordSQ = "";
+		// For results database
+		String usernameDBConnection = "", passwordDBConnection= "";
+		String sonarName = "";
+		String serverName = "";
+		String dbName = "";
+
+		java.net.URL jarLocationUrl = BreakingPointTool.class.getProtectionDomain().getCodeSource().getLocation();
+		String jarLocation = new File(jarLocationUrl.toString()).getParent();
+		jarLocation = jarLocation.replace("file:", "");
+
+		// for eclipse execution
+		int t = jarLocation.lastIndexOf("/");
+		jarLocation = jarLocation.substring(0,t);
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 
 		String jarLocation = System.getProperty("user.dir");
 		String credentials = System.getProperty("user.dir") + "/configurations.txt";
 		
+<<<<<<< HEAD
 		System.out.println("Config file: " + credentials);
+=======
+		System.out.println("Location of config file: " + credentials);
+
+
+		if (new File(credentials).exists()) 
+		{ 
+			BufferedReader br = new BufferedReader(new FileReader(credentials));
+
+			while ((line = br.readLine()) != null)
+			{ 
+				if (line.contains("#")) 
+					continue;
+				/*
+				// SonarQube Database Credentials
+				if (line.contains("usernameSQDB:")) 
+				{ 
+					String[] temp = line.split("usernameSQDB:"); 
+					usernameSQ = temp[1]; 
+				}
+
+				if (line.contains("passwordSQDB:")) 
+				{  
+					String[] temp = line.split("passwordSQDB:"); 
+					passwordSQ = temp[1];
+				} 
+				*/
+
+				// Metrics Database Credentials
+				if (line.contains("username=")) 
+				{ 
+					String[] temp = line.split("username="); 
+					usernameDBConnection = temp[1]; 
+				}
+
+				if (line.contains("password=")) 
+				{  
+					String[] temp = line.split("password="); 
+					passwordDBConnection = temp[1];
+				} 
+
+				if (line.contains("sonarqube_execution:")) 
+				{ 
+					String[] temp = line.split("sonarqube_execution:"); 
+					exec = temp[1]; 
+				}
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 
 		if (!conFile.readConfigurationFile())
 		{
@@ -169,6 +242,7 @@ public class BreakingPointTool
 
 		String [] splitShas = shas.split(",");
 
+<<<<<<< HEAD
 		if (versionsNum != splitShas.length && typeAnalysis == 1)
 		{
 			System.out.println("Number of SHAs and versions are not the same. Try again");
@@ -198,6 +272,61 @@ public class BreakingPointTool
 		// Create database tables
 		TablesCreation tables = new TablesCreation();
 		tables.createDatabaseTables();
+=======
+				if (line.contains("passwordSQ:")) 
+				{  
+					if (line.length() > 11) 
+					{ 
+						String[] temp = line.split("passwordSQ:"); 
+						passwordSQConnection = temp[1];
+					}
+				} 
+			}
+			br.close();
+			// Set Credentials to Database
+			//new SonarDatabaseConnection(usernameSQ, passwordSQ, sonarName);
+			new DatabaseConnection(usernameDBConnection, passwordDBConnection, serverName + "/" +  dbName);
+			// Execute SonarQube
+			//sonarQube(exec,projectName, versionsNum, projectPath, language, serverUrl, usernameSQConnection, passwordSQConnection, typeAnalysis); 
+			// Create database tables
+			TablesCreation tables = new TablesCreation();
+			tables.createDatabaseTables();
+
+			// If the project has records on DB delete them
+			if (typeAnalysis == 1) 
+				DeleteFromDBAlreadyAnalysedProject(projectName, language);
+			else
+				DeleteFromDBAlreadyAnalysedVersion(projectName,language, versionsNum-1);
+
+			// Clone code from Git
+			// TODO delete it after fix
+			/*
+			if (projectName.equals("Neurasmus"))
+			{
+				String shasPath = jarLocation + "/SHAsOfVersions.txt";
+				shasPath = BreakingPointTool.BASE_DIR + "/SHAsOfVersions.txt";
+				ArrayList<String> shas = new ArrayList<String>();
+
+				if (new File(shasPath).exists()) 
+				{ 
+					br = new BufferedReader(new FileReader(shasPath));
+
+					while ((line = br.readLine()) != null)
+					{ 
+						shas.add(line);
+					}
+				}
+
+				GitCloneProject git = new GitCloneProject();
+				
+				git.cloneCommits(gitUsername, gitPassword, shas, gitUrl, projectName, versionsNum);
+
+				projectPath = git.getProjectPath();
+				projectPath = projectPath.replace(projectName, "");
+			}
+			*/
+		}
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 
 		// If the project has records on DB delete them
 		if (typeAnalysis == 1) 
@@ -220,9 +349,12 @@ public class BreakingPointTool
 
 				for (int i = 0; i < versionsNum; i ++)
 				{
+<<<<<<< HEAD
 					// Jar Path inside git clone
 					jarPath = projectPath + projectName +  File.separator + projectName + i +  File.separator + "jars" + File.separator;
 
+=======
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 					// Ripple Effect and Change Proneness Measure Execution
 					RippleEffectChangeProneness rem = new RippleEffectChangeProneness();
 					rem.ExtractJar(jarName, i, jarPath, projectName);
@@ -230,7 +362,10 @@ public class BreakingPointTool
 					// Metrics Calculator Execution
 					MetricsCalculator metricsCalc = new MetricsCalculator();
 					// sta  "" jarPath
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 					metricsCalc.executeOneVersion(jarName, i, jarPath, projectName);
 
 					//dbCall.getDirectoriesForProject(projectName, dbCall.getProjectsKees().get(i));
@@ -260,6 +395,7 @@ public class BreakingPointTool
 					calcAverageAllLevels.setClassToPackageLevel(artifacts.getPackagesId(),projectName, i);	
 
 					v.setPackageInProject(calcAverageAllLevels.getObjectsPackageMetrics());
+<<<<<<< HEAD
 
 					for (int index = 0; index < calcAverageAllLevels.getObjectsPackageMetrics().size(); index++)
 					{
@@ -271,6 +407,8 @@ public class BreakingPointTool
 						}
 						System.out.println();
 					}
+=======
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 					//artifactLongNamesPackage.clear();
 
 					for (int j = 0; j < v.getPackages().size(); j++)
@@ -595,7 +733,8 @@ public class BreakingPointTool
 				for (int i = 0; i < versionsNum; i ++)
 				{
 					//String p = "/opt/" + projectName + "/"+ projectName + i;
-
+					//TODO 
+					// TODO
 					String p = projectPath + File.separator + projectName + File.separator + projectName + i;
 
 
@@ -728,7 +867,9 @@ public class BreakingPointTool
 
 					if (tempPackage.length == 1)
 						continue;
-
+					//String[] temp1 = tempPackage[1].split(".java");
+					//artifactLongNamesPackage.add("com/" + temp1[0]); 
+					//System.out.println("check after: " +tempPackage[1]);
 					artifactLongNamesPackage.add(tempPackage[1]); 
 				}
 				
@@ -777,20 +918,424 @@ public class BreakingPointTool
 				dbSave.deleteTimestamp(projectName, versionsNum - 1);
 			}
 
+
+			/*
+			// CHECK DATA PRINT
+			for (int i = 0; i < versionsNum; i++)
+			{
+				System.out.println("Project ID: " + projectArtifacts.getProjectName());
+				System.out.println("Version ID: " + projectArtifacts.getVersions().get(i).getVersionId());
+				for (int j = 0; j < projectArtifacts.getVersions().get(i).getPackagesC().size(); j++)
+				{
+					System.out.println("Package: " +  projectArtifacts.getVersions().get(i).getPackagesC().get(j).getPackageName());
+					System.out.println("Size1: " +  projectArtifacts.getVersions().get(i).getPackagesC().get(j).getNcloc());
+					System.out.println("TD: " +  projectArtifacts.getVersions().get(i).getPackagesC().get(j).getTD());
+					System.out.println("Commends Density: " +  projectArtifacts.getVersions().get(i).getPackagesC().get(j).getCommentsDensity());
+
+
+					for (int x = 0; x < projectArtifacts.getVersions().get(i).getPackagesC().get(j).getClassInProject().size(); x++)
+					{
+						System.out.println("Class : " + projectArtifacts.getVersions().get(i).getPackagesC().get(j).getClassInProject().get(x).getClassName());
+						System.out.println("Size1 : " + projectArtifacts.getVersions().get(i).getPackagesC().get(j).getClassInProject().get(x).getNcloc());
+						System.out.println("TD : " + projectArtifacts.getVersions().get(i).getPackagesC().get(j).getClassInProject().get(x).getTD());
+						System.out.println("Commends Density : " + projectArtifacts.getVersions().get(i).getPackagesC().get(j).getClassInProject().get(x).getCommentsDensity());
+					}
+				}
+				System.out.println("---------");
+			}*/
+
+
+
 		}
 		else
 		{
 			System.out.println("Programming language does not supported. Execute the software again and choose one of the available options.");
 		}
 
+<<<<<<< HEAD
 		//SonarDatabaseConnection.closeConnection();
 		//DatabaseConnection.closeConnection();
 		del.deleteFile(versionsNum);
+=======
+		SonarDatabaseConnection.closeConnection();
+		DatabaseConnection.closeConnection();
+		deleteFile(versionsNum);
+>>>>>>> parent of d825483... Refactorings and automation. Bug with java analysis
 
 		// Delete directory after used
 		String javaRunningDirectory = System.getProperty("user.dir");
 		String cloneDirectoryPath = javaRunningDirectory + "/Projects/" + projectName;
 		File directory = new File(cloneDirectoryPath);
-		del.deleteSourceCode(directory);
+		deleteSourceCode(directory);
 	}
+
+	// Function that creates sonar-project.properties file and executes SonarQube
+	public static void sonarQube (String exec, String projectName, int versions, String projectPath, String language, String serverUrl, String username, String password, int typeAnalysis) throws FileNotFoundException, InterruptedException
+	{
+		String fileName = "sonar-project.properties";
+		//LocalDate localDate = LocalDate.now();
+		for (int i = 0; i < versions; i++) 
+		{
+			if (typeAnalysis == 2)
+			{
+				i = versions - 1;
+				versions = 1;
+			}
+			// Create sonar-properties file
+			File newFile = new File(projectPath + File.separator + projectName + File.separator + projectName+ i + File.separator + fileName);
+			System.out.println(newFile);
+			String key = projectName + i;
+
+			System.out.println("Execute version: " + i);
+			PrintWriter printWriter = new PrintWriter (newFile);
+			printWriter.println ("# Required metadata");
+			printWriter.println ("sonar.projectKey=" + key); 
+			printWriter.println ("sonar.projectName=" + projectName);
+			printWriter.println ("sonar.projectVersion=" + i);		    
+			//printWriter.println ("sonar.projectDate=" + DateTimeFormatter.ofPattern("yyy/MM/dd").format(localDate));
+			printWriter.println ();
+
+			printWriter.println ("# Comma-separated paths to directories with sources (required)");
+			printWriter.println ("sonar.sources=.");
+			printWriter.println ();
+
+			printWriter.println ("# Language");
+			printWriter.println ("sonar.language=" + language.toLowerCase());
+			if (!language.equals("Java"))
+				printWriter.println("sonar.cxx.suffixes.sources=cpp,c,cxx,h,hxx,hpp");
+			printWriter.println ();
+
+			printWriter.println ("# Encoding of the source files");		    
+			printWriter.println ("sonar.sourceEncoding=UTF-8");
+			printWriter.println ("sonar.java.binaries=.");
+			//printWriter.println ("sonar.projectBaseDir=" + projectPath + File.separator + projectName + File.separator + projectName+ i + File.separator);
+
+			// Default : http://localhost:9000
+			printWriter.println ("# Server Configuration");
+			printWriter.println ("sonar.host.url=" + serverUrl); 
+			//printWriter.println ("sonar.login=" + username);
+			// Password is blank if token is used
+			//printWriter.println ("sonar.password=" + password);
+			printWriter.close ();
+
+			// Execute SonarQube
+			try { 
+				int ch; 
+				System.out.println("inside try");
+				ProcessBuilder pb = new ProcessBuilder(exec); 
+				pb.directory(new File(projectPath + File.separator + projectName + File.separator + projectName + i + File.separator)); 
+				System.out.println("File: " + projectPath + File.separator + projectName + File.separator + projectName + i + File.separator);
+				Process shellProcess = pb.start();  
+				shellProcess.waitFor(); 
+
+				InputStreamReader myIStreamReader = new 
+						InputStreamReader(shellProcess.getInputStream()); 
+
+				while ((ch = myIStreamReader.read()) != -1) { 
+					System.out.print((char)ch); 
+				} 
+			} catch (IOException anIOException) { 
+				System.out.println(anIOException); 
+			} catch(Exception e) { 
+				e.printStackTrace(); 
+
+			} 
+
+			System.out.println("SonarQube Execution Done");
+
+		}
+	}
+
+	// Delete all files from external tools
+	public static void deleteFile(int versions)
+	{	
+		String file;
+		for (int i = 0; i < versions; i++)
+		{
+			file = "output" + i + ".csv";
+			delete(file);
+		}
+
+		delete("output.csv");
+		delete("metrics.txt");
+		delete("rem_and_cpm_metrics_classLevel.csv");
+		delete("rem_and_cpm_metrics_packageLevel.csv");
+	}
+
+	public static void delete(String file)
+	{
+		try
+		{ 
+			Files.deleteIfExists(Paths.get(file)); 
+		} 
+		catch(NoSuchFileException e) 
+		{ 
+			System.out.println("No such file/directory exists"); 
+		} 
+		catch(DirectoryNotEmptyException e) 
+		{ 
+			System.out.println("Directory is not empty."); 
+		} 
+		catch(IOException e) 
+		{ 
+			System.out.println("Invalid permissions."); 
+		} 
+
+		System.out.println("Deletion successful."); 
+	}
+
+
+	// Delete source codes cloned from github
+	public static void deleteSourceCode(File file) throws IOException {
+		boolean result = true;
+
+		if (file.isDirectory()) 
+		{
+			// If directory is empty, then delete it
+			if (file.list().length == 0) 
+			{
+				result = file.delete();
+				if (result)
+				{
+					//System.out.println("File is deleted : " + file.getAbsolutePath());
+				}
+				else
+					System.out.println("Error with the deletion of file");
+			} 
+			else 
+			{
+				// List all the directory contents
+				String[] files = file.list();
+
+				for (String temp : files) 
+				{
+					// construct the file structure
+					File fileDelete = new File(file, temp);
+
+					// recursive delete
+					deleteSourceCode(fileDelete);
+				}
+
+				// check the directory again, if empty then delete it
+				if (file.list().length == 0) 
+				{
+					result = file.delete();
+
+					if (result)
+					{
+						//System.out.println("File is deleted : " + file.getAbsolutePath());
+					}
+					else
+						System.out.println("Error with the deletion of file");
+				}
+			}
+
+		} 
+		else 
+		{
+			// if file, then delete it
+			result = file.delete();
+
+			if (result)
+			{
+				//System.out.println("File is deleted : " + file.getAbsolutePath());
+			}
+			else
+				System.out.println("Error with the deletion of file");
+		}
+	}
+
+	// Delete already analysed project from DB
+	public static void DeleteFromDBAlreadyAnalysedProject(String projectName, String language)
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+		ResultSet resultSet = null;
+		String query;
+
+		query = "SELECT * FROM principalMetrics WHERE project_name = (?) ";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			resultSet = pstm.executeQuery();
+
+			// If there are rows, delete them all
+			if(resultSet.next())
+			{
+				//TODO delete from principal, cMetrics or javaMetrics
+
+				//Delete Principal Metrics
+				query = "DELETE FROM principalMetrics WHERE project_name = (?) ";
+				try 
+				{
+					//Close previous connect and start new
+					pstm.close();
+					pstm = conn.prepareStatement(query);
+					pstm.setString(1, projectName);
+					int rowCount = pstm.executeUpdate();
+
+					System.out.println("Record Deleted successfully from database. Row Count returned is :: "
+							+ rowCount);
+
+				} catch (SQLException e) {
+					System.out
+					.println("An exception occured while deleting data from database. Exception is :: "
+							+ e);
+				}
+
+				String table = "";
+				if (language.equals("Java"))
+				{
+					table = "javaMetrics";
+				}
+				else
+				{
+					table = "cMetrics";
+				}
+
+				//Delete Interest Metrics
+				query = "DELETE FROM " + table + " WHERE project_name = (?) ";
+				try 
+				{
+					//Close previous connect and start new
+					pstm.close();
+					pstm = conn.prepareStatement(query);
+					pstm.setString(1, projectName);
+					int rowCount = pstm.executeUpdate();
+
+					System.out.println("Record Deleted successfully from database. Row Count returned is :: "
+							+ rowCount);
+
+				} catch (SQLException e) {
+					System.out
+					.println("An exception occured while deleting data from database. Exception is :: "
+							+ e);
+				}
+			}
+
+		} catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database select coupling-cohesion request failed."
+					+ "Please try again!");
+		} finally 
+		{
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+	}
+
+	//TODO check for phase 2 if this versions is analysed, if it is, deleted first
+	public static void DeleteFromDBAlreadyAnalysedVersion(String projectName, String language, int version)
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+		ResultSet resultSet = null;
+		String query;
+
+		query = "SELECT * FROM principalMetrics WHERE project_name = (?) and version = (?)";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setInt(2, version);
+			resultSet = pstm.executeQuery();
+
+			// If there are rows, delete them all
+			if(resultSet.next())
+			{
+				//TODO delete from principal, cMetrics or javaMetrics
+
+				//Delete Principal Metrics
+				query = "DELETE FROM principalMetrics WHERE project_name = (?) and version = (?)";
+				try 
+				{
+					//Close previous connect and start new
+					pstm.close();
+					pstm = conn.prepareStatement(query);
+					pstm.setString(1, projectName);
+					pstm.setInt(2, version);
+					int rowCount = pstm.executeUpdate();
+
+					System.out.println("Record Deleted successfully from database. Row Count returned is :: "
+							+ rowCount);
+
+				} catch (SQLException e) {
+					System.out
+					.println("An exception occured while deleting data from database. Exception is :: "
+							+ e);
+				}
+
+				String table = "";
+				if (language.equals("Java"))
+				{
+					table = "javaMetrics";
+				}
+				else
+				{
+					table = "cMetrics";
+				}
+
+				//Delete Interest Metrics
+				query = "DELETE FROM " + table + " WHERE project_name = (?) and version = (?)";
+				try 
+				{
+					//Close previous connect and start new
+					pstm.close();
+					pstm = conn.prepareStatement(query);
+					pstm.setString(1, projectName);
+					pstm.setInt(2, version);
+					int rowCount = pstm.executeUpdate();
+
+					System.out.println("Record Deleted successfully from database. Row Count returned is :: "
+							+ rowCount);
+
+				} catch (SQLException e) {
+					System.out
+					.println("An exception occured while deleting data from database. Exception is :: "
+							+ e);
+				}
+			}
+
+		} catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database select coupling-cohesion request failed."
+					+ "Please try again!");
+		} finally 
+		{
+			if (resultSet != null) {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+	}
+
 }

@@ -1,11 +1,11 @@
-package eu.sdk4ed.uom.td.analysis.preperation;
+package main.java.breakingPointTool.preperation;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
+import main.java.breakingPointTool.connection.DatabaseConnection;
 
 public class ConfigurationFile 
 {

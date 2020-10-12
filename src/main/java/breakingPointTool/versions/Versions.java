@@ -1,9 +1,8 @@
-package eu.sdk4ed.uom.td.analysis.versions;
-
+package main.java.breakingPointTool.versions;
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
+import main.java.breakingPointTool.artifact.PackageMetrics;
+import main.java.breakingPointTool.artifact.PackageMetricsC;
 
 public class Versions 
 {

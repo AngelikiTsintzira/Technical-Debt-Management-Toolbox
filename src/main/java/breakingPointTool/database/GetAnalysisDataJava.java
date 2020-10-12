@@ -1,4 +1,4 @@
-package eu.sdk4ed.uom.td.analysis.database;
+package main.java.breakingPointTool.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
-import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
+import main.java.breakingPointTool.artifact.ClassMetrics;
+import main.java.breakingPointTool.artifact.FileMetricsC;
+import main.java.breakingPointTool.artifact.PackageMetrics;
+import main.java.breakingPointTool.artifact.PackageMetricsC;
+import main.java.breakingPointTool.connection.DatabaseConnection;
 
 // This class gets the analysis results and analyzes a new version instead of all software
 public class GetAnalysisDataJava 

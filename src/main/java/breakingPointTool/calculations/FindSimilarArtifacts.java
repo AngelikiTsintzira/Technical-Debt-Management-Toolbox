@@ -1,10 +1,10 @@
-package eu.sdk4ed.uom.td.analysis.calculations;
+package main.java.breakingPointTool.calculations;
 
 import java.util.ArrayList;
 
-import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
-import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
+import main.java.breakingPointTool.artifact.ClassMetrics;
+import main.java.breakingPointTool.artifact.PackageMetrics;
+import main.java.breakingPointTool.artifact.ProjectArtifact;
 
 public class FindSimilarArtifacts 
 {
@@ -269,15 +269,7 @@ public class FindSimilarArtifacts
 			+ "\n" + similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 5).getPackageName()
 			+ " with similarity: " + similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-5)
 			+ "\n");*/
-			
-			
-			for (int k = 1; k < similarPackages.get(i).getOtherPackages().size() + 1; k++)
-			{
-				similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - k));
-				similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-k));
-			}
-			
-			/*	
+				
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 1));
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 2));
 			similarPackages.get(i).setSimilarPackage(similarPackages.get(i).getOtherPackages().get(similarPackages.get(i).getOtherPackages().size() - 3));
@@ -289,7 +281,6 @@ public class FindSimilarArtifacts
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-3));
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-4));
 		    similarPackages.get(i).setSimilarPackageSimilarity(similarPackages.get(i).getSimilarityPackage().get(similarPackages.get(i).getSimilarityPackage().size()-5));			
-			*/
 		}	
 	}
 	
