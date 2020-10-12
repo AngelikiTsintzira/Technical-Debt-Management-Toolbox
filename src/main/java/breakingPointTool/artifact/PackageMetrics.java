@@ -1,9 +1,9 @@
-package main.java.breakingPointTool.artifact;
+package eu.sdk4ed.uom.td.analysis.artifact;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import main.java.breakingPointTool.database.DatabaseSaveData;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveData;
 
 //This class contains metrics for Java Language
 public class PackageMetrics 

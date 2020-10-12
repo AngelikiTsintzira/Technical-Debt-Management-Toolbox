@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.connection;
+package eu.sdk4ed.uom.td.analysis.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,19 +8,20 @@ import java.util.logging.Logger;
 
 public class DatabaseConnection 
 {
-	private static final String METRICS_DRIVER = "com.mysql.cj.jdbc.Driver";
-	private static String METRICS_URL = "";
-	private static String METRICS_USERNAME = "";
-	private static String METRICS_PASSWORD = "";
+	//"com.mysql.jdbc.Driver"
+	private static final String databaseDriver = "com.mysql.cj.jdbc.Driver";
+	private static String databaseUrl = "";
+	private static String databaseUsername = "";
+	private static String databasePassword = "";
 
 	// Connection Driver for Java and mySQL
 	private static Connection connection = null;
 
 	public DatabaseConnection(String user, String pass, String sonar)
 	{
-		DatabaseConnection.METRICS_USERNAME = user;
-		DatabaseConnection.METRICS_PASSWORD = pass;
-		DatabaseConnection.METRICS_URL = "jdbc:mysql://" + sonar + "?useSSL=false&autoReconnect=true";
+		DatabaseConnection.databaseUsername = user;
+		DatabaseConnection.databasePassword = pass;
+		DatabaseConnection.databaseUrl = "jdbc:mysql://" + sonar + "?useSSL=false&autoReconnect=true";
 	}
 
 	public static Connection getConnection() 
@@ -35,8 +36,8 @@ public class DatabaseConnection
 	private static Connection createConnection() 
 	{
 		try {
-			Class.forName(METRICS_DRIVER);
-			connection = DriverManager.getConnection(METRICS_URL, METRICS_USERNAME, METRICS_PASSWORD);
+			Class.forName(databaseDriver);
+			connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
 			//connection = DriverManager.getConnection(url, username, password);
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();

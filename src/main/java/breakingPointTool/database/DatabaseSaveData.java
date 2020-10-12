@@ -1,12 +1,15 @@
-package main.java.breakingPointTool.database;
+package eu.sdk4ed.uom.td.analysis.database;
 
 import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.java.breakingPointTool.connection.DatabaseConnection;
+
+import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
 
 public class DatabaseSaveData 
 {
@@ -77,14 +80,6 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}	
 	}
 
@@ -121,14 +116,6 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}
 	}	
 
@@ -179,14 +166,6 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}
 	}
 
@@ -219,18 +198,10 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}
 	}
 
-	public void saveTimestamp(String projectName, int versionNum) throws SQLException
+	public boolean saveTimestamp(String projectName, int versionNum) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
@@ -258,18 +229,11 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}
+		return true;
 	}
 
-	public void deleteTimestamp(String projectName, int versionNum) throws SQLException
+	public boolean deleteTimestamp(String projectName, int versionNum) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
@@ -297,14 +261,72 @@ public class DatabaseSaveData
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
 			}
-			/*if (conn != null) {
+		}
+		return true;
+	}
+	
+	public boolean deleteInstancesPrincipal(String projectName, String className) throws SQLException
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+
+		String query = "DELETE FROM principalMetrics WHERE project_name = ? and class_name = ?";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setString(2, className);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
 				try {
-					conn.close();
+					pstm.close();
 				} catch (SQLException e) {
 					Logger logger = Logger.getAnonymousLogger();
 					logger.log(Level.SEVERE, "Exception was thrown: ", e);
 				}
-			}*/
+			}
 		}
+		return true;
 	}
+	
+	public boolean deleteInstancesInterest(String projectName, String className) throws SQLException
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+
+		String query = "DELETE FROM javaMetrics WHERE project_name = ? and class_name = ?";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setString(2, className);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+		return true;
+	}
+	
 }

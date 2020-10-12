@@ -1,8 +1,8 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.artifact.PackageMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
 
 public class FindSimilarPackages 
 {

@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.externalTools;
+  package eu.sdk4ed.uom.td.analysis.externalTools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,7 +75,7 @@ public class RippleEffectChangeProneness
 			}
 
 		} else {
-			System.out.println("Jar file does not exist. The REM will terminate.");
+			System.out.println("Jar file does not exist. Interest probability calculation cannot be done without a jar file. The program will terminate.");
 			System.exit(0);
 		}
 

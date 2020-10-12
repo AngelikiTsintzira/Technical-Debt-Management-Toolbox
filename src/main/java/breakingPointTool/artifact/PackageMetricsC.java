@@ -1,10 +1,10 @@
-package main.java.breakingPointTool.artifact;
+package eu.sdk4ed.uom.td.analysis.artifact;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.database.DatabaseSaveDataC;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveDataC;
 
 public class PackageMetricsC 
 {
@@ -19,12 +19,6 @@ public class PackageMetricsC
 	private double statements;	
 	private double TD;
 	private double comment_lines_density;
-	
-	// CCCC Tool Metrics
-	private double lines_of_code ;	
-	private double McCabes_cyclomatic_complexity;
-	private double weighted_methods_per_class_unity;
-	private double lines_of_code_per_line_of_comment;
 	
 	// Principal Metrics
 	private double bugs;
@@ -54,11 +48,6 @@ public class PackageMetricsC
 		this.statements = 0;		
 		this.TD = 0;
 		this.comment_lines_density = 0;
-		
-		this.lines_of_code = 0;
-		this.McCabes_cyclomatic_complexity = 0;
-		this.weighted_methods_per_class_unity = 0;
-		this.lines_of_code_per_line_of_comment = 0;
 		
 		this.bugs = 0;
 		this.codeSmells = 0;
@@ -154,19 +143,35 @@ public class PackageMetricsC
 		String scope =  "DIR";
 
 		//DatabaseSaveData saveInDataBase = new DatabaseSaveData(); 
-		/*System.out.println("Project name: " + projectName + " version: "  + version + " packageName: " + this.getPackageName() + " scope: " +  scope
-				+ " lines_of_code: " +  this.nloc + " cyclomatic_complexity: " + this.complexity + " weighted_methods_per_class_unity: " +  this.functions + 
-				" commends density: " +  this.comment_lines_density);	 */
 		
-		if (Double.isNaN(this.McCabes_cyclomatic_complexity)) 
-		{
-			this.McCabes_cyclomatic_complexity = 0;		
-		}
+		this.nloc = isNan(this.nloc);
+		this.comment_lines_density = isNan(this.comment_lines_density);
+		this.complexity = isNan(this.complexity);
+		this.functions = isNan(this.functions);
+		
+		this.coupling = isNan(this.coupling);
+		this.cohesion = isNan(this.cohesion);
+		
+		System.out.println("Project name: " + projectName + " version: "  + version + " packageName: " + this.getPackageName() + " scope: " +  scope
+				+ " lines_of_code: " +  this.nloc + " cyclomatic_complexity: " + this.complexity + " weighted_methods_per_class_unity: " +  this.functions + 
+				" commends density: " +  this.comment_lines_density + 
+				" coupling: " + this.coupling + " cohesion: " + this.cohesion);	 
+		
 		
 		DatabaseSaveDataC saveInDataBase = new DatabaseSaveDataC();
 		
 		saveInDataBase.saveMetricsInDatabase(projectName, version, this.getPackageName(), scope, this.nloc, 
 				this.complexity, this.functions, this.comment_lines_density, this.coupling, this.cohesion);
+	}
+	
+	public double isNan(double num)
+	{
+		if (Double.isNaN(num))
+		{
+			num = 0;
+		}
+		
+		return num;
 	}
 
 	public double getCommentsDensity()
@@ -202,47 +207,6 @@ public class PackageMetricsC
 	public double getComplexity()
 	{
 		return this.complexity;
-	}
-
-	
-	public void setLinesOfCodePerPineOfComment(double lines_of_code_per_line_of_comment)
-	{
-		this.lines_of_code_per_line_of_comment = lines_of_code_per_line_of_comment;
-	}
-	
-	public double getLinesOfCodePerPineOfComment()
-	{
-		return this.lines_of_code_per_line_of_comment;
-	}
-	
-	public void setWeightedMethodsPerClassUnity(double weighted_methods_per_class_unity) 
-	{
-		this.weighted_methods_per_class_unity = weighted_methods_per_class_unity;
-	}
-	
-	public double getWeightedMethodsPerClassUnity()
-	{
-		return this.weighted_methods_per_class_unity;
-	}
-	
-	public void setLinesOfCode(double lines_of_code)
-	{
-		this.lines_of_code = lines_of_code;
-	}
-	
-	public double getLinesOfCode()
-	{
-		return this.lines_of_code;
-	}
-	
-	public void setMcCabesCyclomaticComplexity(double McCabes_cyclomatic_complexity)
-	{
-		this.McCabes_cyclomatic_complexity = McCabes_cyclomatic_complexity;
-	}
-	
-	public double getMcCabesCyclomaticComplexity()
-	{
-		return this.McCabes_cyclomatic_complexity ;
 	}
 	
 	public void addSizeInArraylist(double s)

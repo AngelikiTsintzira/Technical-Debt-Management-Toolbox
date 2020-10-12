@@ -1,10 +1,10 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.artifact.ClassMetrics;
-import main.java.breakingPointTool.artifact.PackageMetrics;
-import main.java.breakingPointTool.artifact.ProjectArtifact;
+import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
 
 public class FindSimilarArtifacts 
 {
@@ -212,7 +212,14 @@ public class FindSimilarArtifacts
 			+ "\n" + similarClasses.get(i).getOtherClasses().get(similarClasses.get(i).getOtherClasses().size() - 5).getClassName()
 			+ " with similarity: " + similarClasses.get(i).getSimilarity().get(similarClasses.get(i).getSimilarity().size()-5)
 			+ "\n");*/
-				
+			
+			for (int k = 1; k < similarClasses.get(i).getOtherClasses().size() + 1; k++)
+			{
+				similarClasses.get(i).setSimilarClass(similarClasses.get(i).getOtherClasses().get(similarClasses.get(i).getOtherClasses().size() - k));
+				similarClasses.get(i).setSimilarClassSimilarity(similarClasses.get(i).getSimilarity().get(similarClasses.get(i).getSimilarity().size()-k));
+			}
+			
+			/*
 			similarClasses.get(i).setSimilarClass(similarClasses.get(i).getOtherClasses().get(similarClasses.get(i).getOtherClasses().size() - 1));
 			similarClasses.get(i).setSimilarClass(similarClasses.get(i).getOtherClasses().get(similarClasses.get(i).getOtherClasses().size() - 2));
 			similarClasses.get(i).setSimilarClass(similarClasses.get(i).getOtherClasses().get(similarClasses.get(i).getOtherClasses().size() - 3));
@@ -224,6 +231,7 @@ public class FindSimilarArtifacts
 			similarClasses.get(i).setSimilarClassSimilarity(similarClasses.get(i).getSimilarity().get(similarClasses.get(i).getSimilarity().size()-3));
 			similarClasses.get(i).setSimilarClassSimilarity(similarClasses.get(i).getSimilarity().get(similarClasses.get(i).getSimilarity().size()-4));
 			similarClasses.get(i).setSimilarClassSimilarity(similarClasses.get(i).getSimilarity().get(similarClasses.get(i).getSimilarity().size()-5));			
+			*/
 		}	
 	}
 	

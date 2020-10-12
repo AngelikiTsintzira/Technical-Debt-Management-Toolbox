@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.externalTools;
+package eu.sdk4ed.uom.td.analysis.externalTools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,22 +27,22 @@ public class SemiCalculator
 		{
 			language = "java";
 		}
-		
+
 		System.out.println("----- Start Semi Calculator -----");
-		
+
 		// Jar file if you execute this tool as jar file
 		//File f = new File(path + File.separator + projectName + File.separator + jarName + version + ".jar");
-		
+
 		// Run On Docker in Server Command
 		//String javaRunningDirectory = System.getProperty("user.dir");
 		//File f = new File(javaRunningDirectory + File.separator + projectName + File.separator + projectName + version + ".jar");
-		
+
 		// Jar file if you execute this tool from eclipse
 		File f = new File(path);
 		path = path.replace("//", "/");
 		System.out.println("Execution: " + "java -jar " + semi + " " + language + " " + projectName + " " + version + 
-					" " + path + " " + credentials);
-		
+				" " + path + " " + credentials);
+
 		if(f.exists()) 
 		{ 
 			ArrayList<String> command = new ArrayList<String>();
@@ -54,11 +54,11 @@ public class SemiCalculator
 			command.add(String.valueOf(version));
 			command.add(path);
 			command.add(credentials);
-			
+
 			ProcessBuilder processB = new ProcessBuilder();
-			
+
 			processB.command(command);
-			
+
 			try {
 
 				Process process = processB.start();
@@ -92,5 +92,5 @@ public class SemiCalculator
 			System.exit(0);
 		}
 	}
-	
+
 }

@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.api;
+package eu.sdk4ed.uom.td.analysis.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,74 +34,24 @@ public class SonarQubeMetrics {
 
 	public SonarQubeMetrics(String server) {
 		this.server = server;
-	}
+		
+		this.classes = new ArrayList<>();
+		this.complexity = new ArrayList<>();
+		this.functions = new ArrayList<>();
+		this.ncloc = new ArrayList<>();
+		this.statements = new ArrayList<>();
+		this.technical_debt = new ArrayList<>();
+		this.artifactNames = new ArrayList<>();
+		this.comment_lines_density = new ArrayList<>();
 
-	public void getMetricCommentsDensityFromApi(ArrayList<String> classesIDs) throws JSONException {
-		comment_lines_density = new ArrayList<>();
-
-		for (String clIDs : classesIDs) {
-			try {
-
-				CloseableHttpClient httpClient = HttpClients.createDefault();
-
-				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
-						+ "metricKeys=comment_lines_density" + "&component=" + clIDs);
-				getRequest.addHeader("accept", "application/json");
-
-				HttpResponse response = httpClient.execute(getRequest);
-
-				if (response.getStatusLine().getStatusCode() != 200) {
-					throw new RuntimeException(
-							"Failed : HTTP error code : " + response.getStatusLine().getStatusCode());
-				}
-
-				BufferedReader br = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-
-				String output;
-				while ((output = br.readLine()) != null) 
-				{
-					JSONObject obj = new JSONObject(output);
-					JSONArray array = obj.getJSONObject("component").getJSONArray("measures");
-
-					for (int i = 0; i < array.length(); i++) 
-					{
-						//String metric = array.getJSONObject(i).getString("metric");
-						String value = array.getJSONObject(i).getString("value");
-						//System.out.println(metric + ": " + value);
-						this.comment_lines_density.add(Double.parseDouble(value));
-					}
-				}
-
-				httpClient.close();
-
-			} catch (ClientProtocolException e) {
-
-				e.printStackTrace();
-
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
-
-		}
-		System.out.println("Comments Density from sonar api retrieved with success!");
-
+		this.bugs = new ArrayList<>();
+		this.codeSmells = new ArrayList<>();
+		this.vulnerabilities = new ArrayList<>();
+		this.duplicated_lines_density = new ArrayList<>();
 	}
 
 	public void getMetricsFromApiSonarClassLevel(ArrayList<String> classesIDs, String language)
 			throws JSONException {
-		classes = new ArrayList<>();
-		complexity = new ArrayList<>();
-		functions = new ArrayList<>();
-		ncloc = new ArrayList<>();
-		statements = new ArrayList<>();
-		technical_debt = new ArrayList<>();
-		artifactNames = new ArrayList<>();
-
-		bugs = new ArrayList<>();
-		codeSmells = new ArrayList<>();
-		vulnerabilities = new ArrayList<>();
-		duplicated_lines_density = new ArrayList<>();
 
 		for (String clIDs : classesIDs) {
 			if (clIDs.contains("xml")) {
@@ -111,7 +61,7 @@ public class SonarQubeMetrics {
 			try {
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
-						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements"
+						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements,comment_lines_density"
 						+ "&component=" + clIDs);
 				getRequest.addHeader("accept", "application/json");
 
@@ -181,7 +131,7 @@ public class SonarQubeMetrics {
 				CloseableHttpClient httpClient = HttpClients.createDefault();
 
 				HttpGet getRequest = new HttpGet(this.server + "/api/measures/component?"
-						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements"
+						+ "metricKeys=code_smells,bugs,vulnerabilities,duplicated_lines_density,classes,complexity,functions,ncloc,statements,comment_lines_density"
 						+ "&component=" + clIDs);
 				getRequest.addHeader("accept", "application/json");
 
@@ -397,11 +347,13 @@ public class SonarQubeMetrics {
 			setVulnerabilities(value);
 		else if (metricName.equals("duplicated_lines_density"))
 			setDuplicationsDensity(value);
+		else if (metricName.equals("comment_lines_density"))
+			setCommentsDensity(value);
 	}
 	
 	public void checkSizes(JSONArray array)
 	{
-		if (array.length() < 9)
+		if (array.length() < 10)
 		{
 			if (this.classes.size() < this.artifactNames.size())
 				setNumofClasses(0.0);
@@ -421,6 +373,10 @@ public class SonarQubeMetrics {
 				setVulnerabilities(0.0);
 			if(this.duplicated_lines_density.size() < this.artifactNames.size())
 				setDuplicationsDensity(0.0);
+			if(this.comment_lines_density.size() < this.artifactNames.size())
+				setCommentsDensity(0.0);
+			
+			
 		}
 	}
 }

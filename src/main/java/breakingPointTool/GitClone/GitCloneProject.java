@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.GitClone;
+package eu.sdk4ed.uom.td.analysis.GitClone;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
-import main.java.breakingPointTool.deletePreAnalysedData.deletePreAnalysedData;
+import eu.sdk4ed.uom.td.analysis.preperation.deletePreAnalysedData;
 
 // Clone Project from Git
 public class GitCloneProject 
@@ -29,7 +29,7 @@ public class GitCloneProject
 	}
 
 	// Clone Git Projects with and without credentials
-	public void cloneCommits(String jarLocation, String username, String password, ArrayList<String> sha, String git, String projectName, int version) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException, IOException
+	public boolean cloneCommits(String jarLocation, String username, String password, ArrayList<String> sha, String git, String projectName, int version) throws RefAlreadyExistsException, RefNotFoundException, InvalidRefNameException, CheckoutConflictException, GitAPIException, IOException
 	{
 		this.cloneProjectPath = jarLocation + "/Projects/" + projectName;
 
@@ -53,7 +53,10 @@ public class GitCloneProject
 						.setURI(git)
 						.setDirectory(new File(this.cloneProjectPath + "/" + projectName + ver))
 						.call()) {
-					System.out.println("Having repository: " + result.getRepository().getDirectory());
+					
+					result.checkout().setName(sha.get(i)).call();
+					
+					System.out.println("Cloned Public repository: " + result.getRepository().getDirectory());
 				}
 
 			}
@@ -75,10 +78,12 @@ public class GitCloneProject
 
 					result.checkout().setName(sha.get(i)).call();
 
-					System.out.println("Cloned repository: " + result.getRepository().getDirectory());
+					System.out.println("Cloned Private repository: " + result.getRepository().getDirectory());
 				}
 			}
 		}
+		
+		return true;
 	}
 
 }

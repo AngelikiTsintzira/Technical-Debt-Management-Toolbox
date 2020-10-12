@@ -1,12 +1,12 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.artifact.FileMetricsC;
-import main.java.breakingPointTool.artifact.PackageMetricsC;
-import main.java.breakingPointTool.database.DatabaseGetData;
-import main.java.breakingPointTool.database.DatabaseSaveDataC;
+import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseGetData;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveDataC;
 
 public class ResultsC 
 {
@@ -72,7 +72,7 @@ public class ResultsC
 		System.out.println("Before saved in database: " + investigatedClass.getClassName() + " " + version + " " +
 				this.breakingPoint + " " + this.principal + " " + this.interest + " " + k + " " + rate);
 		saveDataInDatabase.saveBreakingPointInDatabase(investigatedClass.getClassName(), version, this.breakingPoint, this.principal, this.interest, k, rate);
-		saveDataInDatabase.updatePrincipal(investigatedClass.getClassName(), version, this.principal);
+		saveDataInDatabase.updatePrincipal(investigatedClass.getClassName(), version, this.principal, investigatedClass.getProjectName());
 
 	}
 
@@ -125,7 +125,7 @@ public class ResultsC
 		System.out.println("Before saved in database: " + investigatedPackage.getPackageName() + " " + version + " " +
 				this.breakingPoint + " " + this.principal + " " + this.interest + " " + k + " " + rate);
 		saveDataInDatabase.saveBreakingPointInDatabase(investigatedPackage.getPackageName(), version, this.breakingPoint, this.principal, this.interest, k, rate);
-		saveDataInDatabase.updatePrincipal(investigatedPackage.getPackageName(), version, this.principal);
+		saveDataInDatabase.updatePrincipal(investigatedPackage.getPackageName(), version, this.principal, investigatedPackage.getProjectName());
 
 	}
 	
@@ -168,7 +168,7 @@ public class ResultsC
 		System.out.println("Before saved in database: " + investigatedPackage.getPackageName() + " " + version + " " +
 				this.breakingPoint + " " + this.principal + " " + this.interest + " " + k + " " + rate);
 		saveDataInDatabase.saveBreakingPointInDatabase(investigatedPackage.getPackageName(), version, this.breakingPoint, this.principal, this.interest, k, rate);
-		saveDataInDatabase.updatePrincipal(investigatedPackage.getPackageName(), version, this.principal);
+		saveDataInDatabase.updatePrincipal(investigatedPackage.getPackageName(), version, this.principal, investigatedPackage.getProjectName());
 		
 		
 	}

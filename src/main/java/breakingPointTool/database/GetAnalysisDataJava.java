@@ -1,18 +1,21 @@
-package main.java.breakingPointTool.database;
+package eu.sdk4ed.uom.td.analysis.database;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.java.breakingPointTool.artifact.ClassMetrics;
-import main.java.breakingPointTool.artifact.FileMetricsC;
-import main.java.breakingPointTool.artifact.PackageMetrics;
-import main.java.breakingPointTool.artifact.PackageMetricsC;
-import main.java.breakingPointTool.connection.DatabaseConnection;
+
+import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
+import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
 
 // This class gets the analysis results and analyzes a new version instead of all software
 public class GetAnalysisDataJava 
@@ -105,7 +108,6 @@ public class GetAnalysisDataJava
 			}*/
 		}
 		
-
 	}
 	
 	public void getAnalysisDataBPTC(String projectName, String scope, int version) 
@@ -114,7 +116,7 @@ public class GetAnalysisDataJava
 		PreparedStatement pstm = null;
 		ResultSet resultSet = null;
 		String query;
-		
+				
 		query = "SELECT * FROM cMetrics WHERE project_name LIKE (?) and scope LIKE (?) and version = (?)";
 		try 
 		{

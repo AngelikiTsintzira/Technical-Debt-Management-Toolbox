@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.api;
+package eu.sdk4ed.uom.td.analysis.api;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,11 +20,11 @@ public class SonarQubeArtifacts
 	private ArrayList<String> packagesIDs;
 	private String server;
 
-	public SonarQubeArtifacts(String server) 
+	public SonarQubeArtifacts(String serverName) 
 	{
 		this.classesIDs = new ArrayList<String>();
 		this.packagesIDs = new ArrayList<String>();
-		this.server = server;
+		this.server = serverName;
 	}
 
 	public SonarQubeArtifacts()
@@ -32,7 +32,7 @@ public class SonarQubeArtifacts
 		
 	}
 
-	public void getArtifactsName(String projectName, String artifactType) throws JSONException
+	public void getArtifactsName(String projectName, String artifactType) throws JSONException, RuntimeException
 	{
 
 		try {
@@ -41,6 +41,8 @@ public class SonarQubeArtifacts
 					"&qualifiers=" + artifactType);
 			getRequest.addHeader("accept", "application/json");
 
+			System.out.println("Check url: " + this.server + "/api/components/tree?component=" + projectName +
+					"&qualifiers=" + artifactType);
 			HttpResponse response = httpClient.execute(getRequest);
 
 			if (response.getStatusLine().getStatusCode() != 200) {

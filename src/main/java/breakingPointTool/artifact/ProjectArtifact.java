@@ -1,8 +1,8 @@
-package main.java.breakingPointTool.artifact;
+package eu.sdk4ed.uom.td.analysis.artifact;
 
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.versions.Versions;
+import eu.sdk4ed.uom.td.analysis.versions.Versions;
 
 
 public class ProjectArtifact 

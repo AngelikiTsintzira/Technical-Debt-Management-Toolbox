@@ -1,10 +1,10 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.util.ArrayList;
 
-import main.java.breakingPointTool.artifact.FileMetricsC;
-import main.java.breakingPointTool.artifact.PackageMetricsC;
-import main.java.breakingPointTool.artifact.ProjectArtifact;
+import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
 
 public class FindSimilarArtifactsC 
 {
@@ -85,10 +85,12 @@ public class FindSimilarArtifactsC
 		if (typeOfAnalysis == 2)
 			version = 0;
 
+		
+		System.out.println("Classes: " + classes.size());
 		for (int i = 0; i < classes.size(); i++)
 		{
 			String investigatedClass = classes.get(i).getClassName();
-			//System.out.println("Investigated: " + investigatedClass);
+			System.out.println("Investigated: " + investigatedClass);
 			FindSimilarArtifactsC s = new FindSimilarArtifactsC();
 			s.setInvestigatedClass(classes.get(i));
 
@@ -99,7 +101,6 @@ public class FindSimilarArtifactsC
 				{
 					if (!investigatedClass.equals(p.getVersions().get(version).getPackagesC().get(j).getClassInProject().get(z).getClassName()))
 					{
-						//System.out.println("Other class: " + p.getVersions().get(version).getPackages().get(j).getClassInProject().get(z).getClassName());
 						s.setOtherClasses(p.getVersions().get(version).getPackagesC().get(j).getClassInProject().get(z));
 						//double numOfClassSimilarity = calculateSimilarityBetweenMetrics(classes.get(i).getNumOfClasses(), p.getVersions().get(version).getPackagesC().get(j).getClassInProject().get(z).getNumOfClasses());
 						//double complexitySimilarity = calculateSimilarityBetweenMetrics(classes.get(i).getComplexity(), p.getVersions().get(version).getPackagesC().get(j).getClassInProject().get(z).getComplexity());

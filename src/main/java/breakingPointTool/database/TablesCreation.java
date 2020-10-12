@@ -1,22 +1,23 @@
-package main.java.breakingPointTool.database;
+package eu.sdk4ed.uom.td.analysis.database;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import main.java.breakingPointTool.connection.DatabaseConnection;
+
+import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
 
 // Check if tables are created, if not, create them. You should have the database
 public class TablesCreation 
 {
 	// Check if tables are created, if not, create them
-	public void createDatabaseTables() throws SQLException
+	public boolean createDatabaseTables() throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		DatabaseMetaData dbm = conn.getMetaData();
 		ResultSet tables = dbm.getTables(null, null, "principalMetrics", null);
-		
+
 		if (tables.next()) 
 		{
 			System.out.println("Table principalMetrics exists!");
@@ -174,5 +175,6 @@ public class TablesCreation
 				}
 			}
 		}
+		return true;
 	}
 }

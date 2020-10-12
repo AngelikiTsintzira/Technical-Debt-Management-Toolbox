@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.externalTools;
+package eu.sdk4ed.uom.td.analysis.externalTools;
 
 import java.io.File;
 import java.io.FileNotFoundException;

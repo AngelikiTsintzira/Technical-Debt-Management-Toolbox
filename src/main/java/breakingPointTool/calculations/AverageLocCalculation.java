@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,11 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import main.java.breakingPointTool.artifact.ClassMetrics;
-import main.java.breakingPointTool.artifact.PackageMetrics;
-import main.java.breakingPointTool.artifact.ProjectArtifact;
-import main.java.breakingPointTool.database.DatabaseGetData;
-import main.java.breakingPointTool.database.DatabaseSaveData;
+import eu.sdk4ed.uom.td.analysis.artifact.ClassMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseGetData;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveData;
 
 
 public class AverageLocCalculation 
@@ -25,7 +25,7 @@ public class AverageLocCalculation
 	{
 		String line;
 		HashMap<String, ArrayList<Double>> ChangeProneness = new HashMap<String, ArrayList<Double>>();
-		
+
 		ChangeProneness = ChangeProneness("rem_and_cpm_metrics_classLevel.csv");
 		System.out.println("Current path to read file: **********" + System.getProperty("user.dir"));
 		// read specific version file
@@ -33,7 +33,6 @@ public class AverageLocCalculation
 		//System.out.println("Version: " + i);
 		while ((line = br.readLine()) != null) 
 		{
-			
 			if (line.contains(".")) 
 			{
 				if (!line.contains("test") && !line.contains("Test")) 
@@ -72,10 +71,10 @@ public class AverageLocCalculation
 					double Effectiveness = Double.parseDouble(parts[33]);
 					double FanIn = Double.parseDouble(parts[34]);
 					String scope = "FIL";
-					
+
 					ArrayList<Double> list = new ArrayList<Double>();
 					//list = ChangeProneness.get(className);
-					
+
 					if (ChangeProneness.get(className) == null)
 					{
 						list.add(0.0);
@@ -85,29 +84,26 @@ public class AverageLocCalculation
 					{
 						list = ChangeProneness.get(className);
 					}
-					
-					if (className.equals("parsers.cParserSemiLatest"))
-						System.out.println("From output.csv class name: " + className + " in version " + versionNum);
-					
+
+
 					DatabaseSaveData saveInDataBase = new DatabaseSaveData();
 					saveInDataBase.saveMetricsInDatabase(projectName, versionNum, className, scope, wmc, dit, cbo, rfc, lcom, wmc_dec, nocc, mpc, dac, size1, size2,
 							dsc, noh, ana, dam, dcc, camc, moa, mfa, nop, cis, nom, Reusability, Flexibility, Understandability, Functionality, Extendibility, Effectiveness, FanIn,list.get(0), list.get(1));
-					
+
 					ClassMetrics cm = new ClassMetrics(projectName, className);
 					cm.metricsfromMetricsCalculator(mpc, wmc, dit, nocc, rfc, lcom, wmc_dec, dac, size1, size2);
 					cm.metricsfromChangeProneness(list.get(0), list.get(1));
 					classMetrics.add(cm);
-					
 				}
 
 			}
 		}
 	}
-	
+
 	public HashMap<String, ArrayList<Double>> ChangeProneness(String fileName) throws IOException
 	{
 		HashMap<String, ArrayList<Double>> ChangeProneness = new HashMap<String, ArrayList<Double>>();
-		
+
 		String line;
 		//"rem_and_cpm_metrics_classLevel.csv"
 		// read specific version file
@@ -124,7 +120,7 @@ public class AverageLocCalculation
 					{
 						String[] parts = line.split(",");
 						String className = parts[0].replaceAll("\\.", "/");
-						
+
 						double rem = Double.parseDouble(parts[1]);
 						double cpm = Double.parseDouble(parts[2]);
 						ArrayList<Double> list = new ArrayList<Double>();
@@ -135,7 +131,7 @@ public class AverageLocCalculation
 				}
 			}
 		}
-		
+
 		return ChangeProneness;
 	}
 
@@ -216,11 +212,11 @@ public class AverageLocCalculation
 					}
 
 				}
-				
+
 				//if (flag == 0)
-					//continue;
-				
-				
+				//continue;
+
+
 				System.out.println("Flag: " + flag);
 				double x = 0;
 				int aboveZero = 0;
@@ -282,7 +278,7 @@ public class AverageLocCalculation
 
 				double x = 0;
 				int aboveZero = 0;
-				
+
 				if (sizes.size() == 1)
 				{
 					x = 0; //sizes.get(0);
@@ -300,7 +296,7 @@ public class AverageLocCalculation
 					x = x + diff;
 					//if (diff > 0)
 					aboveZero++;
-						
+
 				}
 
 				if (!Double.isNaN(x/aboveZero))
@@ -324,41 +320,42 @@ public class AverageLocCalculation
 			PackageMetrics p = new PackageMetrics(projName,longNamePackage.get(i));
 			this.packageMetrics.add(p);
 		}
-		
+
 		HashMap<String, ArrayList<Double>> ChangePronenessPackage = new HashMap<String, ArrayList<Double>>();
-		
+
 		ChangePronenessPackage = ChangeProneness("rem_and_cpm_metrics_packageLevel.csv");
 
 		for (int i = 0; i < this.packageMetrics.size(); i++)
 		{
 			String packName = this.packageMetrics.get(i).getPackageName();
-			
-			
+
+
 			for (int j = 0; j < this.classMetrics.size(); j++)
 			{
 				int index = this.classMetrics.get(j).getClassName().lastIndexOf("/");
-				
+
 				if (index >= 0)
 				{
 					String packNameOfClass = this.classMetrics.get(j).getClassName().substring(0,index);
-					
+
 					// apo equals egine contains
 					if (packName.contains(packNameOfClass))
 					{
-					
+
 						int first = packName.indexOf(packNameOfClass);
 						int len = packNameOfClass.length();
-						
+
 						if ((first + 1 + len) < packName.length())
 							continue;
-						
+
+						System.out.println("Class " + this.classMetrics.get(j) + " assigned to package " + packName);
 						this.packageMetrics.get(i).setClassInPackage(this.classMetrics.get(j));
 						this.packageMetrics.get(i).setPackageName(packNameOfClass);
-					
-						
+
+
 						ArrayList<Double> list = new ArrayList<Double>();
 						//list = ChangePronenessPackage.get(packName);
-						
+
 						if (ChangePronenessPackage.get(packNameOfClass) == null)
 						{
 							list.add(0.0);
@@ -368,10 +365,10 @@ public class AverageLocCalculation
 						{
 							list = ChangePronenessPackage.get(packNameOfClass);
 						}
-						
+
 						this.packageMetrics.get(i).metricsfromChangeProneness(list.get(0), list.get(1));
 						//this.packageMetrics.get(i).print();
-						
+
 					}
 				}
 			}
@@ -379,14 +376,14 @@ public class AverageLocCalculation
 			this.packageMetrics.get(i).calculateMetricsPackageLevel(version);
 		}
 	}
-	
+
 	public void calculateLOCClassLevelNewVersion(HashMap<String, ClassMetrics> previous, ArrayList<PackageMetrics> currentVersion, int versions )
 	{		
 		for (int j = 0; j < currentVersion.size(); j++)
 		{
 			//currentVersion.get(j).getClassInProject(); // lista me vlasses
 			// for each package
-			
+
 			for (int i = 0; i < currentVersion.get(j).getClassInProject().size(); i++)
 			{
 				// for each class
@@ -394,18 +391,18 @@ public class AverageLocCalculation
 				if (previous.containsKey(currentVersion.get(j).getClassInProject().get(i).getClassName()))
 				{
 					ArrayList<Double> locs = new ArrayList<Double>();
-			    	// Get k values from database
-			    	DatabaseGetData dbCall = new DatabaseGetData();
-			    	locs.addAll(dbCall.getLoCForArtifact(current.getClassName(), versions));
-			    	
-			    	// real number of versions
-			    	int v = locs.size();
-			    	
-			    	if (v == 0)
-			    		break;
-			    	
+					// Get k values from database
+					DatabaseGetData dbCall = new DatabaseGetData();
+					locs.addAll(dbCall.getLoCForArtifact(current.getClassName(), versions));
+
+					// real number of versions
+					int v = locs.size();
+
+					if (v == 0)
+						break;
+
 					ClassMetrics previousClass = previous.get(currentVersion.get(j).getClassInProject().get(i).getClassName());
-					
+
 					System.out.println("Old average before multi : " + previousClass.getAverageLocChange());
 					double oldLoc = Math.round(previousClass.getAverageLocChange() * (v-2));
 					System.out.println("Old average loc: " + oldLoc);
@@ -424,173 +421,41 @@ public class AverageLocCalculation
 			}
 		}
 	}
-	
+
 	public ArrayList<PackageMetrics> calculateLOCCPackageLevelNewVersion(HashMap<String, PackageMetrics> previous, ArrayList<PackageMetrics> currentVersion, int versions )
 	{	
 		for (int i = 0; i < currentVersion.size(); i++)
 		{
 			if (previous.containsKey(currentVersion.get(i).getPackageName()))
 			{
-				
+
 				ArrayList<Double> locs = new ArrayList<Double>();
-		    	// Get k values from database
-		    	DatabaseGetData dbCall = new DatabaseGetData();
-		    	locs.addAll(dbCall.getLoCForArtifact(currentVersion.get(i).getPackageName(), versions));
-		    	
-		    	// real number of versions
-		    	int v = locs.size();
-		    	
-		    	if (v == 0)
-		    		break;
-		    	
+				// Get k values from database
+				DatabaseGetData dbCall = new DatabaseGetData();
+				locs.addAll(dbCall.getLoCForArtifact(currentVersion.get(i).getPackageName(), versions));
+
+				// real number of versions
+				int v = locs.size();
+
+				if (v == 0)
+					break;
+
 				PackageMetrics c = previous.get(currentVersion.get(i).getPackageName());
 				double oldLoc = Math.round(c.getAverageLocChange() * (v - 2));
-				
+
 				double currentLoc = Math.abs(currentVersion.get(i).getSize1() - c.getSize1());
-				
+
 				double loc = (oldLoc + currentLoc) / (v-1); 
 				System.out.println("Before and after: " + oldLoc + " " + loc);
-				
+
 				System.out.println("For package: " + currentVersion.get(i).getPackageName() + 
 						" the loc is: " + loc);
 				currentVersion.get(i).setAverageLocChange(loc);
 			}
 		}
-		
+
 		return currentVersion;
 	}
-
-	/*public void setLocPackageLevel(ArrayList<ArrayList<PackageMetrics>>  versionsList)
-	{
-		for (int i = 0; i < versionsList.get(versionsList.size() -1).size(); i++)
-		{
-			PackageMetrics packageMetrics = versionsList.get(versionsList.size() -1).get(i);
-			ArrayList<Double> locChange = new ArrayList<Double>();
-			double x = 0;
-			for (int k = 0; k < versionsList.size(); k++ ) 
-			{
-				// versions
-				ArrayList<PackageMetrics> packmetricsList = versionsList.get(k);
-				for (int j = 0; j < packmetricsList.size(); j++)
-				{
-					//package in every version
-					PackageMetrics pk = packmetricsList.get(j);
-					if (pk.getPackageName().equals(packageMetrics.getPackageName()))
-					{
-						locChange.add(pk.getSize1());
-						break;
-					}
-
-				}				
-			}
-
-			for (int j = 1; j <locChange.size() - 1; j++)
-			{
-				x = x + Math.abs(locChange.get(j) - locChange.get(j-1));
-			}
-
-			System.out.println("For package:" + packageMetrics.getPackageName());
-			System.out.println("Average LOC is: " + x/locChange.size());
-			packageMetrics.setAverageInterest(x/locChange.size());
-			locChange.clear();
-
-		}
-	}/
-
-	/*public void readMetricsFromFileClassLevel(String projectName, int versionNum) throws NumberFormatException, IOException
-	{
-		String line;
-		for (int i = 0; i < versionNum ; i++)
-		{
-			br = new BufferedReader(new FileReader("output" + i + ".csv"));	
-			//System.out.println("Version: " + i);
-			while ((line = br.readLine()) != null ) 
-			{
-				if (line.contains(".")) 
-				{
-					String[] parts = line.split(",");
-					String className = parts[0].replaceAll("\\.", "/");
-					int j;
-
-					for (j = 0; j < classMetrics.size(); j++)
-					{
-						if (classMetrics.get(j).getClassName().equals(className))
-						{
-							classMetrics.get(j).addSizeInArraylist(Double.parseDouble(parts[15]));
-							System.out.println("size: " + classMetrics.get(j).getArraySize1().size());
-							if (i == versionNum - 1)
-							{
-								classMetrics.get(j).metricsfromMetricsCalculator(Double.parseDouble(parts[13]), Double.parseDouble(parts[1]), 
-										Double.parseDouble(parts[2]), Double.parseDouble(parts[3]), Double.parseDouble(parts[5]), 
-										Double.parseDouble(parts[6]), Double.parseDouble(parts[7]), Double.parseDouble(parts[14]), 
-										Double.parseDouble(parts[15]), Double.parseDouble(parts[16]));
-							}
-							break;
-						}
-					}
-
-					if (j == classMetrics.size() || classMetrics.size() == 0)
-					{
-						ClassMetrics m = new ClassMetrics(projectName, className);
-						m.addSizeInArraylist(Double.parseDouble(parts[15]));
-						if (i == versionNum - 1)
-						{
-							m.metricsfromMetricsCalculator(Double.parseDouble(parts[13]), Double.parseDouble(parts[1]), 
-									Double.parseDouble(parts[2]), Double.parseDouble(parts[3]), Double.parseDouble(parts[5]), 
-									Double.parseDouble(parts[6]), Double.parseDouble(parts[7]), Double.parseDouble(parts[14]), 
-									Double.parseDouble(parts[15]), Double.parseDouble(parts[16]));
-						}
-						classMetrics.add(m);
-					}		
-				}
-			}			
-		}
-	}*/
-
-
-
-
-	/*public void calculateAverageLocClassLevel()
-	{
-		// Calculate Average Lines Of Code per class
-		for (ClassMetrics cl : classMetrics)
-		{
-			double x = 0;
-			ArrayList<Double> clNew = new ArrayList<Double>();
-			clNew = cl.getArraySize1();
-			System.out.println("For class: " + cl.getClassName());
-			for (int i =1; i < clNew.size(); i++)
-			{
-				x = x + clNew.get(i) - clNew.get(i-1);
-				System.out.println("/ttest size: "+ clNew.get(i));
-			}
-			System.out.println("Average LOC is: " + x/clNew.size());
-			cl.setAverageInterest(x/clNew.size());
-		}	
-	}*/
-
-
-
-	/*	public ArrayList<PackageMetrics> setClassToPackageLevel(ArrayList<PackageMetrics> packMetrics)
-	{
-		for (int i = 0; i < packMetrics.size(); i++)
-		{
-			for (int j = 0; j < classMetrics.size(); j++)
-			{
-				 int index = classMetrics.get(j).getClassName().lastIndexOf("/");
-				 String pacName = classMetrics.get(j).getClassName().substring(0,index);
-				 if (pacName.equals(packMetrics.get(i).getPackageName()))
-				 {
-					 packMetrics.get(i).setClassInPackage(classMetrics.get(j));
-				 }
-			}
-
-			packMetrics.get(i).calculateMetricsPackageLevel();
-			packMetrics.get(i).addSizeInArraylist(packMetrics.get(i).getSize1());
-		}
-		this.packageMetrics = packMetrics;
-		return packageMetrics;
-	}*/
 
 	public ArrayList<ClassMetrics> getObjectsClassMetrics()
 	{

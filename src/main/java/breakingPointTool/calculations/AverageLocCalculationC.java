@@ -1,17 +1,17 @@
-package main.java.breakingPointTool.calculations;
+package eu.sdk4ed.uom.td.analysis.calculations;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import main.java.breakingPointTool.api.SonarQubeMetrics;
-import main.java.breakingPointTool.artifact.FileMetricsC;
-import main.java.breakingPointTool.artifact.PackageMetricsC;
-import main.java.breakingPointTool.artifact.ProjectArtifact;
-import main.java.breakingPointTool.database.DatabaseGetData;
-import main.java.breakingPointTool.database.DatabaseSaveDataC;
-import main.java.breakingPointTool.externalTools.SemiCalculator;
+import eu.sdk4ed.uom.td.analysis.api.SonarQubeMetrics;
+import eu.sdk4ed.uom.td.analysis.artifact.FileMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.PackageMetricsC;
+import eu.sdk4ed.uom.td.analysis.artifact.ProjectArtifact;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseGetData;
+import eu.sdk4ed.uom.td.analysis.database.DatabaseSaveDataC;
+import eu.sdk4ed.uom.td.analysis.externalTools.SemiCalculator;
 
 public class AverageLocCalculationC 
 {
@@ -109,7 +109,17 @@ public class AverageLocCalculationC
 			for (int j = 0; j < this.fileMetrics.size(); j++)
 			{
 				int index = this.fileMetrics.get(j).getClassName().lastIndexOf("/");
-				String packNameOfClass = this.fileMetrics.get(j).getClassName().substring(0,index);	
+				
+				// Files outside the main folder
+				String packNameOfClass = null;
+				if (index == -1)
+				{
+					packNameOfClass = projName;
+				}
+				else
+				{
+					packNameOfClass = this.fileMetrics.get(j).getClassName().substring(0,index);	
+				}
 				
 				if (packName.equals(packNameOfClass))
 				{

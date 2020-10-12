@@ -1,4 +1,4 @@
-package main.java.breakingPointTool.artifact;
+package eu.sdk4ed.uom.td.analysis.artifact;
 
 // This class contains metrics for Java Language
 public class ClassMetrics 

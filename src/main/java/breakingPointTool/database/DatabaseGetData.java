@@ -1,17 +1,18 @@
-package main.java.breakingPointTool.database;
+package eu.sdk4ed.uom.td.analysis.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.java.breakingPointTool.connection.DatabaseConnection;
+
+import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
 
 public class DatabaseGetData 
 {
-	private String kee;
 	private ArrayList<String> projectKees;
 	private ArrayList<String> classesIDs;
 	private ArrayList<String> packagesIDs;
@@ -88,244 +89,9 @@ public class DatabaseGetData
 				}
 			}
 
-			/*if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}*/
 		}
 		return cc;
 	}
-
-	/*
-	public void getKeeForProject(String projectName) throws InstantiationException, IllegalAccessException
-	{
-		Connection conn = SonarDatabaseConnection.getConnection();
-		PreparedStatement pstm = null;
-		ResultSet resultSet = null;
-		String query;
-		query = "SELECT kee FROM projects WHERE name LIKE (?) ORDER BY LENGTH(kee), kee ASC";
-		try 
-		{
-			pstm = conn.prepareStatement(query);
-			pstm.setString(1, projectName);
-			resultSet = pstm.executeQuery();
-			while (resultSet.next()) 
-			{
-				this.projectKees.add(resultSet.getString("kee"));
-			}
-
-		} catch (SQLException ex) {
-			Logger logger = Logger.getAnonymousLogger();
-			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
-			System.out.println("Database Query Request failed. The project does not exist!");
-		} finally {
-			if (resultSet != null) {
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-			if (pstm != null) {
-				try {
-					pstm.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-			
-		}
-		System.out.println("Kee from project " + projectName+ " retrieved from database successfully!");
-	}
-
-
-	public void getClassesForProject(String projectName, String kee) throws InstantiationException, IllegalAccessException
-	{
-		Connection conn = SonarDatabaseConnection.getConnection();
-		PreparedStatement pstm = null;
-		ResultSet resultSet = null;
-		String query;
-		query = "SELECT kee FROM projects WHERE scope LIKE 'FIL' AND kee LIKE (?)";
-		try 
-		{
-			pstm = conn.prepareStatement(query);
-			pstm.setString(1, kee + ":%");
-			resultSet = pstm.executeQuery();
-			while (resultSet.next()) 
-			{
-				String classesId = resultSet.getString("kee");
-				this.classesIDs.add(classesId);
-			}
-
-		} catch (SQLException ex) {
-			Logger logger = Logger.getAnonymousLogger();
-			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
-			System.out.println("Database select request failed. The project or the kee does not exist in the database."
-					+ "Please try again!");
-		} finally {
-			if (resultSet != null) {
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-			if (pstm != null) {
-				try {
-					pstm.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-
-		}
-		System.out.println("Classes from project " + projectName + " retrieved from database successfully!");		
-	}
-
-	public void  getDirectoriesForProject(String projectName, String kee) throws InstantiationException, IllegalAccessException
-	{
-		Connection conn = SonarDatabaseConnection.getConnection();
-		PreparedStatement pstm = null;
-		ResultSet resultSet = null;
-		String query;
-		query = "SELECT kee FROM projects WHERE scope LIKE 'DIR' AND kee LIKE (?)";
-		try 
-		{
-			pstm = conn.prepareStatement(query);
-			pstm.setString(1, kee + ":%");
-			resultSet = pstm.executeQuery();
-			while (resultSet.next()) 
-			{
-				String classesId = resultSet.getString("kee");
-				this.packagesIDs.add(classesId);
-			}
-
-		} catch (SQLException ex) {
-			Logger logger = Logger.getAnonymousLogger();
-			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
-			System.out.println("Database select request failed. The project or the kee does not exist in the database."
-					+ "Please try again!");
-		} finally {
-			if (resultSet != null) {
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-			if (pstm != null) {
-				try {
-					pstm.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-
-		}
-		System.out.println("Directories from project " + projectName + " retrieved from database successfully!");	
-	}
-	*/
-/*
-	public void  getAllProjects() throws InstantiationException, IllegalAccessException
-	{
-		ArrayList<String> keeDirectoryID = new ArrayList<>();
-		Connection conn = SonarDatabaseConnection.getConnection();
-		PreparedStatement pstm = null;
-		ResultSet resultSet = null;
-		String query;
-		query = "SELECT kee,name FROM projects WHERE scope LIKE 'PRJ' ORDER by kee DESC";
-		try 
-		{
-			pstm = conn.prepareStatement(query);
-			resultSet = pstm.executeQuery();
-			while (resultSet.next()) 
-			{
-				String classesId = resultSet.getString("kee");
-				String projectName = resultSet.getString("name");
-				this.projectsNames.add(projectName);
-				keeDirectoryID.add(classesId);
-			}
-
-		} catch (SQLException ex) {
-			Logger logger = Logger.getAnonymousLogger();
-			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
-			System.out.println("Database select request failed. There are not projects in the database."
-					+ "Please try again!");
-		} finally {
-			if (resultSet != null) {
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-			if (pstm != null) {
-				try {
-					pstm.close();
-				} catch (SQLException e) {
-					Logger logger = Logger.getAnonymousLogger();
-					logger.log(Level.SEVERE, "Exception was thrown: ", e);
-				}
-			}
-
-		}
-		System.out.println("Projects retrieved from database successfully!");
-		processingForProjectsAndVersions(keeDirectoryID);	
-	}
-	*/
-	
-	/*
-	public void processingForProjectsAndVersions(ArrayList<String> kees)
-	{
-		int i = 1;
-		String investigatedId = kees.get(0);
-		this.projectsIDs.add(investigatedId);
-		investigatedId = investigatedId.replaceAll("\\d","");
-		while (i < (kees.size()-1))
-		{
-			if (kees.get(i).contains(investigatedId)) 
-			{
-				i++;
-			}
-			else
-			{
-				investigatedId = kees.get(i);
-				this.projectsIDs.add(investigatedId);
-				investigatedId = investigatedId.replaceAll("\\d","");				
-				i++;
-			}
-		}
-
-	}
-	*/
-/*
-	public ArrayList<String> getUniqueNames()
-	{
-		// Store unique items in result.
-		ArrayList<String> result = new ArrayList<>();
-		// Loop over argument list.
-		for (String item : projectsNames) {
-
-			// If String is not in set, add it to the list and the set.
-			if (!result.contains(item)) 
-			{
-				result.add(item);
-			}
-		}
-		return result;
-	}
-	*/
 
 	public ArrayList<Double> getKForArtifact(String className)
 	{

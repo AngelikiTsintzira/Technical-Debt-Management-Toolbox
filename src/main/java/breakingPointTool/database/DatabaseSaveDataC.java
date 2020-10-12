@@ -1,12 +1,15 @@
-package main.java.breakingPointTool.database;
+package eu.sdk4ed.uom.td.analysis.database;
 
 import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import main.java.breakingPointTool.connection.DatabaseConnection;
+
+import eu.sdk4ed.uom.td.analysis.connection.DatabaseConnection;
 
 public class DatabaseSaveDataC 
 {
@@ -159,18 +162,19 @@ public class DatabaseSaveDataC
 
 	}
 
-	public void updatePrincipal(String className, int versionNum, double principal) throws SQLException
+	public void updatePrincipal(String className, int versionNum, double principal,  String projectName) throws SQLException
 	{
 		Connection conn = DatabaseConnection.getConnection();
 		PreparedStatement pstm = null;
 
-		String query = "UPDATE principalMetrics SET principal = ? WHERE class_name = ? AND version = ? ;";
+		String query = "UPDATE principalMetrics SET principal = ? WHERE class_name = ? AND version = ? AND project_name = ?;";
 		try 
 		{
 			pstm = conn.prepareStatement(query);
 			pstm.setDouble(1, principal);
 			pstm.setString(2, className);
 			pstm.setDouble(3, versionNum);
+			pstm.setString(4, projectName);
 			pstm.executeUpdate();
 
 		} catch (SQLException ex) {
@@ -196,5 +200,69 @@ public class DatabaseSaveDataC
 				}
 			}*/
 		}
+	}
+	
+	public boolean deleteInstancesPrincipal(String projectName, String className) throws SQLException
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+
+		String query = "DELETE FROM principalMetrics WHERE project_name = ? and class_name = ?";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setString(2, className);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean deleteInstancesInterest(String projectName, String className) throws SQLException
+	{
+		Connection conn = DatabaseConnection.getConnection();
+		PreparedStatement pstm = null;
+
+		String query = "DELETE FROM cMetrics WHERE project_name = ? and class_name = ?";
+		try 
+		{
+			pstm = conn.prepareStatement(query);
+			pstm.setString(1, projectName);
+			pstm.setString(2, className);
+			pstm.executeUpdate();
+
+		}  
+		catch (SQLException ex) {
+			Logger logger = Logger.getAnonymousLogger();
+			logger.log(Level.SEVERE, "Exception was thrown: ", ex);
+			System.out.println("Database request failed. Please try again!");
+		} 
+		finally {
+			if (pstm != null) {
+				try {
+					pstm.close();
+				} catch (SQLException e) {
+					Logger logger = Logger.getAnonymousLogger();
+					logger.log(Level.SEVERE, "Exception was thrown: ", e);
+				}
+			}
+		}
+		return true;
 	}
 }
