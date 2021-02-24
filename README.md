@@ -78,7 +78,6 @@ mv path/externalTools/metrics_calculator_noOop.jar TechnicalDebtManagementToolBo
 
 ## Execution
 * You need to have a git repositiry with the source code. The repository can be public or private.
-* **This is ONLY applied to Java Projects** Inside the repository, in the main folder, there  **MUST** be a folder named "jars". Inside this folder, you should put the execution file (jar) of the source code. The name of the jar file should be tha name of the project + version number. For example, the project name is 'TDToolbox', you have 3 versions of it and 10 commits. **ONLY** for the 3 commits that are version you need to have the jar folder. For the first version the jar name should be TDToolbox0.jar, for the second version the jar name is TDTollbox1.jar, and for the third version the jars name is TDToolbox2.jar.
 
 ## Usage
 
@@ -90,13 +89,13 @@ java -jar technicalDebtManagmentToolbox.jar projectName language versions gitUrl
 ```
  
 where:
-* projectName: This parameter defines the project name
-* language: Programming language. Possible values {"Java", "C", "C++"}
-* versions: Number of software versions
+* language: Programming language. Possible values {"Java", "C"}
+* typeAnalysis: 1 for full analysis, 2 to add a new version
 * gitUrl: Url from git in order to clone the source code and do the analysis
 * gitUsername: Username of the git account
 * gitPassword: Password of the gi account. If it is public, just type 1 character for example 1
-* shas: For each version, the user should provide the commit shas. Not all commits are versions. For example if there 10 commits and 2 of them are versions, the input is those 2 commits shas seperated by comma. For example: d8254832e8as29b4d29739dceaa18dhak201b9faf,ajaj48a38qa4f9b4d29739dceaa18354c01b9faf
+* moveClassRefactoring: true to do the refactoring analysis, false to not do the refactoring analysis,
+* extractMethodRefactoring: true to do the refactoring analysis, false to not do the refactoring analysis,
 
 
 
